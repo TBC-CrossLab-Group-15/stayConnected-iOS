@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let window = UIWindow(windowScene: scene)
         
-        window.rootViewController = UINavigationController(rootViewController: LeaderBoardVC())
+        window.rootViewController = UINavigationController(rootViewController: LoginVC())
 
        
         self.window = window
