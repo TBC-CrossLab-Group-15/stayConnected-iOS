@@ -50,4 +50,12 @@ final class PostAddViewModel {
         inactiveTags.remove(at: index)
         delegate?.didTagsRefreshed()
     }
+    
+    
+    func postQuestion(subject: String, question: String) {
+        print(activeTags)
+        
+        print(subject)
+        print(question)
+    }
 }

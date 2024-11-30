@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PostAdd: UIViewController {
+class PostAdd: UIViewController, UITextFieldDelegate {
     private let viewModel: PostAddViewModel
     
     private let lineOne:UIView = {
@@ -142,15 +142,45 @@ class PostAdd: UIViewController {
         collection.delegate = self
         collection.dataSource = self
         collection.showsVerticalScrollIndicator = false
-        collection.backgroundColor = .green
+        
         return collection
     }()
-
+    
     private lazy var tagsStack: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
         return stack
+    }()
+    
+    private lazy var postInput: UITextField = {
+        let field = UITextField()
+        field.translatesAutoresizingMaskIntoConstraints = false
+        field.placeholder = "Type your question here"
+        field.clipsToBounds = true
+        field.layer.borderWidth = 1
+        field.layer.borderColor = UIColor.primaryGray.cgColor
+        field.layer.cornerRadius = 8
+        field.keyboardType = .default
+        
+        let leftContainer = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 47))
+        field.leftView = leftContainer
+        field.leftViewMode = .always
+
+        let rightIconContainer = UIView(frame: CGRect(x: 0, y: 0, width: 32, height: 47))
+        let sendIcon = UIButton(type: .custom)
+        sendIcon.setImage(UIImage(named: "sendQuestionIcon"), for: .normal)
+        sendIcon.tintColor = .primaryGray
+        sendIcon.frame = CGRect(x: 0, y: rightIconContainer.frame.height / 2 - 12, width: 24, height: 24)
+        sendIcon.addAction(UIAction(handler: { [weak self] action in
+            self?.addPostToDataBase()
+        }), for: .touchUpInside)
+        
+        rightIconContainer.addSubview(sendIcon)
+        field.rightView = rightIconContainer
+        field.rightViewMode = .always
+        
+        return field
     }()
     
     init(viewModel: PostAddViewModel = PostAddViewModel()) {
@@ -164,7 +194,7 @@ class PostAdd: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupUI()
     }
     
@@ -182,7 +212,7 @@ class PostAdd: UIViewController {
         headerBar.addSubview(headerTitle)
         headerBar.addSubview(cancelButton)
         view.addSubview(subjectInput)
-        
+        view.addSubview(postInput)
         setupConstraints()
     }
     
@@ -236,13 +266,21 @@ class PostAdd: UIViewController {
             chooseTagCollection.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
             chooseTagCollection.topAnchor.constraint(equalTo: lineThree.topAnchor, constant: 10),
             chooseTagCollection.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-            chooseTagCollection.bottomAnchor.constraint(lessThanOrEqualTo: view.bottomAnchor, constant: -100),
             chooseTagCollection.heightAnchor.constraint(equalToConstant: 100),
+            
+            postInput.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            postInput.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            postInput.topAnchor.constraint(equalTo: chooseTagCollection.bottomAnchor, constant: 10),
+            postInput.heightAnchor.constraint(equalToConstant: 47),
         ])
     }
     
     private func closeModal() {
         dismiss(animated: true, completion: nil)
+    }
+    
+    private func addPostToDataBase() {
+        viewModel.postQuestion(subject: subjectInput.text ?? "", question: postInput.text ?? "")
     }
 }
 
