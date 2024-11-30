@@ -220,7 +220,7 @@ class LoginVC: UIViewController {
     }
     
     private func signUP() {
-//        navigationController?.pushViewController(SignUpVC(), animated: true)
+        navigationController?.pushViewController(SignUpVC(), animated: true)
     }
     
     private func errorModal(text: String) {
