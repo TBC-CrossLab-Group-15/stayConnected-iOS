@@ -1,0 +1,11 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19 18" width="19" height="18">
+	<title>Rectangle 7-svg</title>
+	<defs>
+		<image width="3" height="6" id="img1" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMyIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgMyA2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMi44ODM1MiAwLjE4MTgxOFY2SDEuODI5NTVWMS4yMDczOUgxLjc5NTQ1TDAuNDM0NjU5IDIuMDc2N1YxLjExMDhMMS44ODA2OCAwLjE4MTgxOEgyLjg4MzUyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg=="/>
+	</defs>
+	<style>
+		.s0 { fill: #ffaa00 } 
+	</style>
+	<path class="s0" d="m12.7 1.5l4 3.7c2 2 2 5.1 0 7l-4 3.7c-1.9 2-5.2 2-7.2 0l-3.9-3.7c-2-1.9-2-5 0-7l3.9-3.7c2-1.9 5.3-1.9 7.2 0z"/>
+	<use id="1" href="#img1" transform="matrix(1,0,0,1,7,6)"/>
+</svg>

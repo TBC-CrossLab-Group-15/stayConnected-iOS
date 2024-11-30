@@ -1,0 +1,11 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 18" width="20" height="18">
+	<title>Rectangle 6</title>
+	<defs>
+		<image  width="18" height="18" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAAAXNSR0IB2cksfwAAADlQTFRFAAAAs7OzsrKysbGxsrKys7OzsrKysrKysrKysrKysrKys7OzsrKysrKysrKysbGxtbW1t7e3r6+vvL+rSwAAABN0Uk5TAECv31B//4+fYHDP3++/sDAgIPyQq8QAAAB/SURBVHicZdDLDoQgDAXQXmFEYpyY+f9/FONCjA9GWh+Id0HJSRdtQRwAFIpF/vx+pIT5IhOkVyxStdGZwjMlwoanRINd6RmNes6oREl50Ewv+vpMLNo1a6tB2qZmlnEfNe0zyvFCt0WRtdtByUja0XmcXx+tUh1dtFcb/HGiP0KkI1UNDNjFAAAAAElFTkSuQmCC"/>
+		<image width="5" height="6" id="img2" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAGCAYAAAAL+1RLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAABFSURBVHgBfYtBDQAgDAM3FGABJ0hAyiTgBCloQMGkjC4sgRdNLk2blswsgwkUDM+JiBpYzFzgOfJVrOtb+LV/C7EjDWQDb306zzpiq40AAAAASUVORK5CYII="/>
+	</defs>
+	<style>
+	</style>
+	<use id="Background" href="#img1" x="1" y="0"/>
+	<use id="2" href="#img2" transform="matrix(1,0,0,1,8,6)"/>
+</svg>
