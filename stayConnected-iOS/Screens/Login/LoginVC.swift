@@ -211,8 +211,8 @@ class LoginVC: UIViewController {
         viewModel.postData()
         
         
-//        let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
-//        sceneDelegate?.window?.rootViewController = TabBarController()
+        let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
+        sceneDelegate?.window?.rootViewController = TabBarController()
     }
     
     private func resetPassword() {
