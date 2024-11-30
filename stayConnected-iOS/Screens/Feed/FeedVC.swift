@@ -116,8 +116,8 @@ final class FeedVC: UIViewController, FeedModelDelegate {
         let collectionLayout = UICollectionViewFlowLayout()
         collectionLayout.scrollDirection = .horizontal
         
-        collectionLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize // Automatic sizing
-        collectionLayout.minimumInteritemSpacing = 0
+        collectionLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        collectionLayout.minimumInteritemSpacing = 10
         collection = UICollectionView(frame: .zero, collectionViewLayout: collectionLayout)
         collection.translatesAutoresizingMaskIntoConstraints = false
         collection.register(TagCell.self, forCellWithReuseIdentifier: "TagCell")

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PostAdd: UIViewController, DidTagsRefreshed, DidTagsRefreshedInactiveTags {
+class PostAdd: UIViewController {
     private let viewModel: PostAddViewModel
     
     private let lineOne:UIView = {
@@ -67,11 +67,9 @@ class PostAdd: UIViewController, DidTagsRefreshed, DidTagsRefreshedInactiveTags 
         field.clipsToBounds = true
         field.keyboardType = .default
         
-        // Create left label container
         let leftLabelContainer = UIView()
         leftLabelContainer.translatesAutoresizingMaskIntoConstraints = false
         
-        // Create left label
         let leftLabel = UILabel()
         leftLabel.translatesAutoresizingMaskIntoConstraints = false
         leftLabel.configureCustomText(
@@ -82,7 +80,6 @@ class PostAdd: UIViewController, DidTagsRefreshed, DidTagsRefreshedInactiveTags 
         )
         leftLabelContainer.addSubview(leftLabel)
         
-        // Add padding
         let padding: CGFloat = 16
         let intrinsicWidth = leftLabel.intrinsicContentSize.width + padding
         
@@ -94,7 +91,6 @@ class PostAdd: UIViewController, DidTagsRefreshed, DidTagsRefreshedInactiveTags 
             
         ])
         
-        // Assign container to leftView
         field.leftView = leftLabelContainer
         field.leftViewMode = .always
         
@@ -119,13 +115,11 @@ class PostAdd: UIViewController, DidTagsRefreshed, DidTagsRefreshedInactiveTags 
     }()
     
     private lazy var tagCollectionPostAdd: UICollectionView = {
-        let collection: UICollectionView
         let collectionLayout = UICollectionViewFlowLayout()
         collectionLayout.scrollDirection = .horizontal
-        
-        collectionLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        collectionLayout.minimumInteritemSpacing = 0
-        collection = UICollectionView(frame: CGRect(x: 0, y: 0, width: 200, height: 50), collectionViewLayout: collectionLayout)
+        collectionLayout.estimatedItemSize = CGSize(width: 100, height: 30)
+        collectionLayout.minimumInteritemSpacing = 10
+        let collection = UICollectionView(frame: .zero, collectionViewLayout: collectionLayout)
         collection.translatesAutoresizingMaskIntoConstraints = false
         collection.register(TagCell.self, forCellWithReuseIdentifier: "TagCell")
         collection.backgroundColor = .clear
@@ -136,24 +130,22 @@ class PostAdd: UIViewController, DidTagsRefreshed, DidTagsRefreshedInactiveTags 
     }()
     
     private lazy var chooseTagCollection: UICollectionView = {
-        let collection: UICollectionView
         let collectionLayout = UICollectionViewFlowLayout()
         collectionLayout.scrollDirection = .vertical
-        
-        collectionLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        collectionLayout.minimumInteritemSpacing = 0
-        collection = UICollectionView(frame: CGRect(x: 0, y: 0, width: 200, height: 50), collectionViewLayout: collectionLayout)
+        collectionLayout.minimumLineSpacing = 10
+        collectionLayout.minimumInteritemSpacing = 10
+        collectionLayout.estimatedItemSize = CGSize(width: 100, height: 30)
+        let collection = UICollectionView(frame: .zero, collectionViewLayout: collectionLayout)
         collection.translatesAutoresizingMaskIntoConstraints = false
         collection.register(TagCell.self, forCellWithReuseIdentifier: "TagCell")
         collection.backgroundColor = .clear
         collection.delegate = self
         collection.dataSource = self
-        collection.showsHorizontalScrollIndicator = false
+        collection.showsVerticalScrollIndicator = false
         collection.backgroundColor = .green
         return collection
     }()
 
-    
     private lazy var tagsStack: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -172,7 +164,6 @@ class PostAdd: UIViewController, DidTagsRefreshed, DidTagsRefreshedInactiveTags 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.delegate = self
 
         setupUI()
     }
@@ -243,22 +234,15 @@ class PostAdd: UIViewController, DidTagsRefreshed, DidTagsRefreshedInactiveTags 
             lineThree.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
             
             chooseTagCollection.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
-            chooseTagCollection.topAnchor.constraint(equalTo: lineThree.topAnchor, constant: 0),
+            chooseTagCollection.topAnchor.constraint(equalTo: lineThree.topAnchor, constant: 10),
             chooseTagCollection.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-            chooseTagCollection.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
+            chooseTagCollection.bottomAnchor.constraint(lessThanOrEqualTo: view.bottomAnchor, constant: -100),
+            chooseTagCollection.heightAnchor.constraint(equalToConstant: 100),
         ])
     }
     
     private func closeModal() {
         dismiss(animated: true, completion: nil)
-    }
-    
-    func didTagsRefreshed() {
-        tagCollectionPostAdd.reloadData()
-    }
-    
-    func didTagsRefreshedInactives() {
-        chooseTagCollection.reloadData()
     }
 }
 
@@ -279,19 +263,12 @@ extension PostAdd: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == tagCollectionPostAdd {
             viewModel.removeActiveTag(at: indexPath.row)
-            collectionView.performBatchUpdates({
-                collectionView.deleteItems(at: [indexPath])
-            }) { _ in
-                self.chooseTagCollection.reloadData()
-            }
+            collectionView.deleteItems(at: [indexPath])
+            chooseTagCollection.reloadData()
         } else {
             viewModel.removeInactiveTag(at: indexPath.row)
-            collectionView.performBatchUpdates({
-                collectionView.deleteItems(at: [indexPath])
-            }) { _ in
-                self.tagCollectionPostAdd.reloadData()
-            }
+            collectionView.deleteItems(at: [indexPath])
+            tagCollectionPostAdd.reloadData()
         }
     }
-
 }
