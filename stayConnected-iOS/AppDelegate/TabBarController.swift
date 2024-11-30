@@ -38,7 +38,7 @@ class TabBarController: UITabBarController {
         let leaderboardVC = configureTab(
             icon: "trophy",
             title: "Leaderboard",
-            vc: FeedVC()
+            vc: LeaderBoardVC()
         )
         
         let profileVC = configureTab(

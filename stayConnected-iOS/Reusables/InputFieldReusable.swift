@@ -119,10 +119,3 @@ final class InputFieldReusable: UIView {
         return valueString
     }
 }
-//
-//  InputFieldReusable.swift
-//  test2
-//
-//  Created by Despo on 28.11.24.
-//
-
