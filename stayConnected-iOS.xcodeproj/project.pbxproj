@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E3AC8CEF2CFB344500E740D3 /* NetworkManagerFramework in Frameworks */ = {isa = PBXBuildFile; productRef = E3AC8CEE2CFB344500E740D3 /* NetworkManagerFramework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		E3AC8C432CFB257200E740D3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E3AC8CEF2CFB344500E740D3 /* NetworkManagerFramework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +130,7 @@
 			);
 			name = "stayConnected-iOS";
 			packageProductDependencies = (
+				E3AC8CEE2CFB344500E740D3 /* NetworkManagerFramework */,
 			);
 			productName = "stayConnected-iOS";
 			productReference = E3AC8C2C2CFB257000E740D3 /* stayConnected-iOS.app */;
@@ -208,6 +214,9 @@
 			);
 			mainGroup = E3AC8C232CFB257000E740D3;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E3AC8CED2CFB344500E740D3 /* XCRemoteSwiftPackageReference "webService" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E3AC8C2D2CFB257000E740D3 /* Products */;
 			projectDirPath = "";
@@ -577,6 +586,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E3AC8CED2CFB344500E740D3 /* XCRemoteSwiftPackageReference "webService" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Desp0o/webService.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E3AC8CEE2CFB344500E740D3 /* NetworkManagerFramework */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E3AC8CED2CFB344500E740D3 /* XCRemoteSwiftPackageReference "webService" */;
+			productName = NetworkManagerFramework;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E3AC8C242CFB257000E740D3 /* Project object */;
 }
