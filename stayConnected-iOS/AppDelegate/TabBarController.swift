@@ -44,7 +44,7 @@ class TabBarController: UITabBarController {
         let profileVC = configureTab(
             icon: "profile",
             title: "Profile",
-            vc: FeedVC()
+            vc: ProfileVC()
         )
         
         self.setViewControllers([feedVC, leaderboardVC, profileVC], animated: true)

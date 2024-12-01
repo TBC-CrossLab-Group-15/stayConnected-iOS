@@ -55,8 +55,8 @@ class PostAdd: UIViewController, UITextFieldDelegate {
             title: "Cancel",
             color: .primaryViolet,
             fontName: "InterB",
-            fontSize: 16,
-            action: closeModal
+            fontSize: 16
+//            action: closeModal
         )
         return button
     }()
@@ -194,7 +194,8 @@ class PostAdd: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        navigationController?.setNavigationBarHidden(true, animated: false)
+
         setupUI()
     }
     

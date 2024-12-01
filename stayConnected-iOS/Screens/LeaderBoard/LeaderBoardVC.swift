@@ -90,7 +90,8 @@ final class LeaderBoardVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        navigationController?.setNavigationBarHidden(true, animated: false)
+
         setupUI()
     }
     
@@ -164,5 +165,5 @@ extension LeaderBoardVC: UITableViewDelegate, UITableViewDataSource {
         return cell ?? BoardCell()
     }
     
-    
+   
 }

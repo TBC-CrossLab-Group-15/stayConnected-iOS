@@ -8,7 +8,7 @@
 import UIKit
 
 extension UIButton {
-    func configureCustomButton(title: String, color: UIColor, fontName: String, fontSize: CGFloat, cornerR: CGFloat = 0, bgColor: UIColor = .clear, action: @escaping () -> Void) {
+    func configureCustomButton(title: String, color: UIColor, fontName: String, fontSize: CGFloat, cornerR: CGFloat = 0, bgColor: UIColor = .clear) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.setTitle(title, for: .normal)
         self.setTitleColor(color, for: .normal)
@@ -16,8 +16,5 @@ extension UIButton {
         self.clipsToBounds = true
         self.layer.cornerRadius = cornerR
         self.backgroundColor = bgColor
-        self.addAction(UIAction(handler: { _ in
-            action()
-        }), for: .touchUpInside)
     }
 }
