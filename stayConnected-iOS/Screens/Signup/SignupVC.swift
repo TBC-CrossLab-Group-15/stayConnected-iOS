@@ -89,8 +89,8 @@ class SignUpVC: UIViewController {
             fontName: "InterS",
             fontSize: 16,
             cornerR: 12,
-            bgColor: .primaryViolet,
-            action: signupAction
+            bgColor: .primaryViolet
+//            action: signupAction
         )
         
         return button
