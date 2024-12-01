@@ -41,7 +41,7 @@ final class QuestionCell: UITableViewCell {
         return stack
     }()
     
-    private let cellView: UIView = {
+    private lazy var cellView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .white

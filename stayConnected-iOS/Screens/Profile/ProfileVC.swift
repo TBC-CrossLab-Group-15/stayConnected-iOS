@@ -6,8 +6,11 @@
 //
 
 import UIKit
+import Foundation
 
-class ProfileVC: UIViewController {
+class ProfileVC: UIViewController, AvatarDelegate {
+    private let viewModel: ProfileViewModel
+    
     private lazy var spacerOne: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -78,10 +81,21 @@ class ProfileVC: UIViewController {
     
     private lazy var avatarImage: UIImageView = {
         let image = UIImageView()
+        image.isUserInteractionEnabled = true
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.image = UIImage(named: "testUser")
         image.clipsToBounds = true
         image.layer.cornerRadius = 60
+        
+        if let avatarName = UserDefaults.standard.string(forKey: "userAvatar") {
+            image.image = UIImage(named: avatarName)
+        }
+        return image
+    }()
+    
+    private lazy var cameraIcon: UIImageView = {
+        let image = UIImageView()
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.image = UIImage(named: "camera")
         
         return image
     }()
@@ -196,10 +210,21 @@ class ProfileVC: UIViewController {
         return label
     }()
     
+    init(viewModel: ProfileViewModel = ProfileViewModel()) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
-
+        
+        viewModel.delegate = self
+        
         setupUI()
     }
     
@@ -207,6 +232,7 @@ class ProfileVC: UIViewController {
         view.backgroundColor = .white
         view.addSubview(screenTitle)
         view.addSubview(avatarImage)
+        view.addSubview(cameraIcon)
         view.addSubview(fullNameLabel)
         view.addSubview(mailLabel)
         view.addSubview(infoLabel)
@@ -228,6 +254,9 @@ class ProfileVC: UIViewController {
         thirdStack.addArrangedSubview(logOutIcon)
         thirdStack.addArrangedSubview(logOutLabel)
         
+        let tapGestureAvatar = UITapGestureRecognizer(target: self, action: #selector(chooseAvatars))
+        avatarImage.addGestureRecognizer(tapGestureAvatar)
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapMyanswers))
         secondStack.addGestureRecognizer(tapGesture)
         
@@ -246,6 +275,9 @@ class ProfileVC: UIViewController {
             avatarImage.topAnchor.constraint(equalTo: screenTitle.bottomAnchor, constant: 24),
             avatarImage.widthAnchor.constraint(equalToConstant: 120),
             avatarImage.heightAnchor.constraint(equalToConstant: 120),
+            
+            cameraIcon.leadingAnchor.constraint(equalTo: avatarImage.trailingAnchor, constant: -30),
+            cameraIcon.topAnchor.constraint(equalTo: avatarImage.bottomAnchor, constant: -15),
             
             fullNameLabel.topAnchor.constraint(equalTo: avatarImage.bottomAnchor, constant: 24),
             fullNameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -296,6 +328,21 @@ class ProfileVC: UIViewController {
         print("Log out initiated")
         
         let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
-        sceneDelegate?.window?.rootViewController = LoginVC()
+        sceneDelegate?.window?.rootViewController = LoginVC ()
+    }
+    
+    @objc func chooseAvatars() {
+        let avatarVC = ChooseAvatarVC(viewModel: viewModel)
+        avatarVC.modalPresentationStyle = .pageSheet
+        
+        if let sheet = avatarVC.sheetPresentationController {
+            sheet.detents = [.medium()]
+        }
+        
+        present(avatarVC, animated: true)
+    }
+    
+    func didAvatarChanged() {
+        avatarImage.image = UIImage(named: viewModel.avatarName)
     }
 }
