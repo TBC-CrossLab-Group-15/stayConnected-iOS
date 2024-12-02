@@ -168,7 +168,7 @@ class LoginVC: UIViewController {
         loginButton.addAction(UIAction(handler: { [weak self] _ in
             self?.login()
         }), for: .touchUpInside)
-        
+      
         signupButton.addAction(UIAction(handler: {[weak self] _ in
             self?.signUP()
         }), for: .touchUpInside)
