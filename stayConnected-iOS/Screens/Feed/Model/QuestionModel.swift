@@ -18,11 +18,16 @@ struct QuestionModel: Codable {
     let user: User
     let title: String
     let text: String
-    let create_date: String
+    let createDate: String
     
     enum CodingKeys: String, CodingKey {
-        case id, tags, answers, user, title, text
-        case create_date = "createDate"
+        case id
+        case tags
+        case answers
+        case user
+        case title
+        case text
+        case createDate = "create_date"
     }
 }
 
@@ -37,58 +42,34 @@ struct Answer: Codable {
     let isCorrect: Bool
     let user: User
     let question: Int
-    let create_date: String
-    let likes: [Int]
-    let likes_count: Int
+    let createDate: String
     
     enum CodingKeys: String, CodingKey {
-        case id, text, isCorrect, user, question, likes
-        case create_date = "createDate"
-        case likes_count = "likesCount"
+        case id
+        case text
+        case isCorrect
+        case user
+        case question
+        case createDate = "create_date"
     }
 }
 
 struct User: Codable {
     let id: Int
-    let username: String
+    let avatar: Avatar
+    let firstName: String
+    let lastName: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case avatar
+        case firstName = "first_name"
+        case lastName = "last_name"
+    }
 }
 
+struct Avatar: Codable {
+    let id: Int
+    let name: String
+}
 
-//    enum CodingKeys: String, CodingKey {
-//        case id, text, isCorrect, user, question
-//        case createDate = "create_date"
-//        case likes, likesCount = "likes_count"
-//    }
-
-
-//{
-//    "id": 4,
-//    "tags": [
-//        {
-//            "id": 4,
-//            "name": "java"
-//        }
-//    ],
-//    "answers": [
-//        {
-//            "id": 5,
-//            "text": "bla",
-//            "isCorrect": true,
-//            "user": {
-//                "id": 3,
-//                "username": "guka"
-//            },
-//            "question": 4,
-//            "create_date": "2024-11-30T16:32:01.033917Z",
-//            "likes": [],
-//            "likes_count": 0
-//        }
-//    ],
-//    "user": {
-//        "id": 1,
-//        "username": "misho"
-//    },
-//    "title": "misho",
-//    "text": "mishooo",
-//    "create_date": "2024-11-30T16:31:42.534410Z"
-//}

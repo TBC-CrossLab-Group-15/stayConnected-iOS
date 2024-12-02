@@ -152,9 +152,6 @@ final class QuestionCell: UITableViewCell {
             checkMark.isHidden = true
         }
         tagCollection.reloadData()
-        print(tagsArray.count)
-
-        print(tagsArray)
     }
 }
 

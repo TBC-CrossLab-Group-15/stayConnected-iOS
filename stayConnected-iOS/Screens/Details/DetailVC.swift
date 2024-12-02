@@ -6,9 +6,11 @@
 //
 
 import UIKit
+import izziDateFormatter
 
 class DetailVC: UIViewController {
     private let questionModel: QuestionModel
+    private let izziDateFormatter: IzziDateFormatterProtocol
     
     private lazy var backButton: UIButton = {
         let button = UIButton()
@@ -35,8 +37,22 @@ class DetailVC: UIViewController {
         return label
     }()
     
-    init(questionModel: QuestionModel) {
+    private lazy var commentsTable: UITableView = {
+        let table = UITableView()
+        table.showsVerticalScrollIndicator = false
+        table.translatesAutoresizingMaskIntoConstraints = false
+        table.delegate = self
+        table.dataSource = self
+        table.separatorStyle = .none
+        table.register(CommentCell.self, forCellReuseIdentifier: "CommentCell")
+        return table
+    }()
+    
+    init(questionModel: QuestionModel,
+         izziDateFormatter: IzziDateFormatterProtocol = IzziDateFormatter()
+    ) {
         self.questionModel = questionModel
+        self.izziDateFormatter = izziDateFormatter
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -51,13 +67,14 @@ class DetailVC: UIViewController {
     }
     
     private func setupUI() {
-        view.backgroundColor = .red
-        print(questionModel)
+        view.backgroundColor = .white
         
         view.addSubview(backButton)
         view.addSubview(topicTitle)
         view.addSubview(postTitle)
-        
+        view.addSubview(askedDate)
+        view.addSubview(commentsTable)
+
         configureView()
         setupConstraints()
     }
@@ -75,6 +92,14 @@ class DetailVC: UIViewController {
             postTitle.topAnchor.constraint(equalTo: topicTitle.bottomAnchor, constant: 4),
             postTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             postTitle.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+            
+            askedDate.topAnchor.constraint(equalTo: postTitle.bottomAnchor, constant: 4),
+            askedDate.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            
+            commentsTable.topAnchor.constraint(equalTo: askedDate.bottomAnchor, constant: 20),
+            commentsTable.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            commentsTable.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
+            commentsTable.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
         ])
     }
     
@@ -92,17 +117,31 @@ class DetailVC: UIViewController {
             fontName: "InterR",
             size: 16
         )
+        let date = izziDateFormatter.formatDate(currentFormat: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", currentDate: questionModel.createDate, format: "dd/MM/yyyy")
+        
+        let time = izziDateFormatter.formatDate(currentFormat: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", currentDate: questionModel.createDate, format: "HH:mm")
+        
+        askedDate.configureCustomText(
+            text: "\(date) at \(time)",
+            color: .primaryGray,
+            fontName: "InterR",
+            size: 13
+        )
+    }
+}
+
+extension DetailVC: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        questionModel.answers.count
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CommentCell", for: indexPath) as? CommentCell
+        let currentAnswer = questionModel.answers[indexPath.row]
+        cell?.configureCell(with: currentAnswer)
+        cell?.selectionStyle = .none
+        return cell ?? CommentCell()
     }
-    */
-
+    
+    
 }

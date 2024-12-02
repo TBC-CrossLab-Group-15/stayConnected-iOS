@@ -57,6 +57,5 @@ final class QuestionSingleTagCell: UICollectionViewCell {
     func setupCell(with tag: Tag) {
         tagButton.setTitle(tag.name, for: .normal)
         tagButton.setTitleColor(.primaryViolet, for: .normal)
-        print("rigerred")
     }
 }

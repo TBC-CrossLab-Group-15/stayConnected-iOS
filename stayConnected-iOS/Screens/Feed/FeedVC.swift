@@ -314,7 +314,9 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
-        navigationController?.pushViewController(DetailVC(questionModel: currentQuestion), animated: true)
+        let vc  = DetailVC(questionModel: currentQuestion)
+        vc.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
