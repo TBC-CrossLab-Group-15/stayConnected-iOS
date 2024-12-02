@@ -9,7 +9,7 @@ import UIKit
 
 final class QuestionCell: UITableViewCell {
     
-    private var tagsArray: [String] = []
+    private var tagsArray: [Tag] = []
     
     private lazy var questionTitle: UILabel = {
         let label = UILabel()
@@ -51,31 +51,30 @@ final class QuestionCell: UITableViewCell {
     }()
     
     private lazy var tagCollection: UICollectionView = {
-        let collection: UICollectionView
-        let collectionLayout = UICollectionViewFlowLayout()
-        collectionLayout.scrollDirection = .horizontal
-        
-        collectionLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        collectionLayout.minimumInteritemSpacing = 0
-        collection = UICollectionView(frame: CGRect(x: 0, y: 0, width: 200, height: 50), collectionViewLayout: collectionLayout)
-        collection.translatesAutoresizingMaskIntoConstraints = false
-        collection.register(QuestionSingleTagCell.self, forCellWithReuseIdentifier: "QuestionSingleTagCell")
-        collection.backgroundColor = .clear
-        collection.delegate = self
-        collection.dataSource = self
-        collection.showsHorizontalScrollIndicator = false
-        return collection
-    }()
+            let collection: UICollectionView
+            let collectionLayout = UICollectionViewFlowLayout()
+            collectionLayout.scrollDirection = .horizontal
+        collectionLayout.estimatedItemSize = CGSize(width: 100, height: 30)
+            collectionLayout.minimumInteritemSpacing = 8
+            collection = UICollectionView(frame: .zero, collectionViewLayout: collectionLayout)
+            collection.translatesAutoresizingMaskIntoConstraints = false
+            collection.register(QuestionSingleTagCell.self, forCellWithReuseIdentifier: "QuestionSingleTagCell")
+            collection.backgroundColor = .clear
+            collection.delegate = self
+            collection.dataSource = self
+            collection.showsHorizontalScrollIndicator = false
+            return collection
+        }()
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-    
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
     }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     
     private func setupUI() {
         contentView.backgroundColor = .bgWhite
@@ -121,8 +120,10 @@ final class QuestionCell: UITableViewCell {
     }
     
     func configureCell(with question: QuestionModel) {
+        tagsArray = question.tags
+
         questionTitle.configureCustomText(
-            text: question.topicTitle,
+            text: question.title,
             color: .primaryGray,
             fontName: "InterR",
             size: 13,
@@ -130,7 +131,7 @@ final class QuestionCell: UITableViewCell {
         )
         
         questionLabel.configureCustomText(
-            text: question.question,
+            text: question.title,
             color: .black,
             fontName: "InterR",
             size: 15,
@@ -138,27 +139,35 @@ final class QuestionCell: UITableViewCell {
         )
         
         repCountLabel.configureCustomText(
-            text: "replies: \(question.repliesCount)",
+            text: "replies: \(question.answers.count)",
             color: .primaryGray,
             fontName: "InterR",
             size: 15
         )
         repCountLabel.font = UIFont.italicSystemFont(ofSize: 11)
         
-        checkMark.isHidden = question.isAnswered ? false : true
-        tagsArray = question.tags
+        if question.answers.count > 0 {
+            checkMark.isHidden = question.answers[0].isCorrect ? false : true
+        } else {
+            checkMark.isHidden = true
+        }
         tagCollection.reloadData()
+        print(tagsArray.count)
+
+        print(tagsArray)
     }
 }
 
 extension QuestionCell: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        tagsArray.count
+        return tagsArray.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "QuestionSingleTagCell", for: indexPath) as? QuestionSingleTagCell
+        
         let singleTag = tagsArray[indexPath.row]
+        
         cell?.setupCell(with: singleTag)
         return cell ?? QuestionSingleTagCell()
     }

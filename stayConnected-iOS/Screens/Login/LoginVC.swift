@@ -45,7 +45,7 @@ class LoginVC: UIViewController {
     private lazy var pwdLabel: UILabel = {
         let label = UILabel()
         label.configureCustomText(
-            text: "password",
+            text: "Password",
             color: .primaryGray,
             fontName: "InterR",
             size: 12
@@ -104,7 +104,7 @@ class LoginVC: UIViewController {
     let userNameInput = InputFieldReusable(
         isLabelHidden: false,
         labelName: "Email",
-        placeholder: "Username",
+        placeholder: "Email",
         isPassword: false
     )
     
@@ -168,6 +168,10 @@ class LoginVC: UIViewController {
         loginButton.addAction(UIAction(handler: { [weak self] _ in
             self?.login()
         }), for: .touchUpInside)
+      
+        signupButton.addAction(UIAction(handler: {[weak self] _ in
+            self?.signUP()
+        }), for: .touchUpInside)
     }
     
     private func setupConstraints() {
@@ -211,7 +215,6 @@ class LoginVC: UIViewController {
         }
         
         viewModel.postData()
-        
         
         let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
         sceneDelegate?.window?.rootViewController = TabBarController()
