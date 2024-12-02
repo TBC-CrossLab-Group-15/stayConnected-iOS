@@ -308,16 +308,14 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
         cell?.selectionStyle = .none
         let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
         cell?.configureCell(with: currentQuestion)
-        
+    
         return cell ?? QuestionCell()
     }
     
-    
-    //    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    //
-    //        let selectedQuestion = viewModel.singleQuestion(with: indexPath.row)
-    //
-    //    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
+        navigationController?.pushViewController(DetailVC(questionModel: currentQuestion), animated: true)
+    }
 }
 
 
