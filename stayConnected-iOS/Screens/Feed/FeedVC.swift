@@ -200,6 +200,8 @@ final class FeedVC: UIViewController, FeedModelDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.setNavigationBarHidden(true, animated: false)
+
         viewModel.delegate = self
         
         setupUI()

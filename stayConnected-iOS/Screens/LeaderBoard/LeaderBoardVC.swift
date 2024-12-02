@@ -71,7 +71,7 @@ final class LeaderBoardVC: UIViewController {
     )
     
     private let firstPlace = WinnersView(
-        colorForBorder: .primaryGray,
+        colorForBorder: .firsPlaceBorder,
         imageUrl: "https://picsum.photos/200",
         positionIcon: "firsPositionIcon",
         firstName: "leon",
@@ -80,7 +80,7 @@ final class LeaderBoardVC: UIViewController {
     )
     
     private let thirdPlace = WinnersView(
-        colorForBorder: .primaryGray,
+        colorForBorder: .thirdPlaceBorder,
         imageUrl: "https://picsum.photos/200",
         positionIcon: "thirdPlaceIcon",
         firstName: "leon",
@@ -90,7 +90,8 @@ final class LeaderBoardVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        navigationController?.setNavigationBarHidden(true, animated: false)
+
         setupUI()
     }
     
@@ -164,5 +165,5 @@ extension LeaderBoardVC: UITableViewDelegate, UITableViewDataSource {
         return cell ?? BoardCell()
     }
     
-    
+   
 }

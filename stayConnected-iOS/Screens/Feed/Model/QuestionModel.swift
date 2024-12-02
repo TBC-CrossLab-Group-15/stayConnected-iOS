@@ -5,8 +5,25 @@
 //  Created by Despo on 30.11.24.
 //
 
+import Foundation
+
 struct QuestionsResponse: Codable {
     let response: [QuestionModel]
+}
+
+struct QuestionModel: Codable {
+    let id: Int
+    let tags: [Tag]
+    let answers: [Answer]
+    let user: User
+    let title: String
+    let text: String
+    let create_date: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id, tags, answers, user, title, text
+        case create_date = "createDate"
+    }
 }
 
 struct Tag: Codable {
@@ -21,7 +38,14 @@ struct Answer: Codable {
     let user: User
     let question: Int
     let create_date: String
+    let likes: [Int]
     let likes_count: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case id, text, isCorrect, user, question, likes
+        case create_date = "createDate"
+        case likes_count = "likesCount"
+    }
 }
 
 struct User: Codable {
@@ -29,16 +53,12 @@ struct User: Codable {
     let username: String
 }
 
-struct QuestionModel: Codable {
-    let id: Int
-    let tags: [Tag]
-    let answers: [Answer]
-    let user: User
-    let title: String
-    let text: String
-    let create_date: String
-}
 
+//    enum CodingKeys: String, CodingKey {
+//        case id, text, isCorrect, user, question
+//        case createDate = "create_date"
+//        case likes, likesCount = "likes_count"
+//    }
 
 
 //{

@@ -45,7 +45,7 @@ class LoginVC: UIViewController {
     private lazy var pwdLabel: UILabel = {
         let label = UILabel()
         label.configureCustomText(
-            text: "password",
+            text: "Password",
             color: .primaryGray,
             fontName: "InterR",
             size: 12
@@ -60,8 +60,7 @@ class LoginVC: UIViewController {
             title: "Forgot Password?",
             color: .primaryGray,
             fontName: "InterR",
-            fontSize: 12,
-            action: resetPassword
+            fontSize: 12
         )
         
         return button
@@ -96,8 +95,7 @@ class LoginVC: UIViewController {
             title: "Sign Up",
             color: .primaryGray,
             fontName: "InterR",
-            fontSize: 18,
-            action: signUP
+            fontSize: 18
         )
         
         return button
@@ -106,7 +104,7 @@ class LoginVC: UIViewController {
     let userNameInput = InputFieldReusable(
         isLabelHidden: false,
         labelName: "Email",
-        placeholder: "Username",
+        placeholder: "Email",
         isPassword: false
     )
     
@@ -125,8 +123,7 @@ class LoginVC: UIViewController {
             fontName: "InterS",
             fontSize: 16,
             cornerR: 12,
-            bgColor: .primaryViolet,
-            action: login
+            bgColor: .primaryViolet
         )
         
         return button
@@ -143,7 +140,8 @@ class LoginVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        navigationController?.setNavigationBarHidden(true, animated: false)
+
         setupUI()
     }
     
@@ -166,6 +164,14 @@ class LoginVC: UIViewController {
         passwordField.translatesAutoresizingMaskIntoConstraints = false
         
         setupConstraints()
+        
+        loginButton.addAction(UIAction(handler: { [weak self] _ in
+            self?.login()
+        }), for: .touchUpInside)
+        
+        signupButton.addAction(UIAction(handler: {[weak self] _ in
+            self?.signUP()
+        }), for: .touchUpInside)
     }
     
     private func setupConstraints() {
@@ -209,7 +215,6 @@ class LoginVC: UIViewController {
         }
         
         viewModel.postData()
-        
         
         let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
         sceneDelegate?.window?.rootViewController = TabBarController()

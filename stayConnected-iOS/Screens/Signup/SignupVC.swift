@@ -84,13 +84,12 @@ class SignUpVC: UIViewController {
     private lazy var signUpButton: UIButton = {
         let button = UIButton()
         button.configureCustomButton(
-            title: "Log In",
+            title: "Sign Up",
             color: .white,
             fontName: "InterS",
             fontSize: 16,
             cornerR: 12,
-            bgColor: .primaryViolet,
-            action: signupAction
+            bgColor: .primaryViolet
         )
         
         return button
@@ -133,6 +132,10 @@ class SignUpVC: UIViewController {
         contentView.addSubview(signUpButton)
         
         setupConstraints()
+        
+        signUpButton.addAction(UIAction(handler: {[weak self] _ in
+            self?.signupAction()
+        }), for: .touchUpInside)
     }
     
     private func setupConstraints() {
