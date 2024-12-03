@@ -24,8 +24,8 @@ class LoginVC: UIViewController {
         label.configureCustomText(
             text: "Log in",
             color: .black,
-            fontName: "Inter-Bold",
-            size: 80
+            size: 30,
+            weight: .bold
         )
         
         return label
@@ -47,8 +47,8 @@ class LoginVC: UIViewController {
         label.configureCustomText(
             text: "Password",
             color: .primaryGray,
-            fontName: "InterR",
-            size: 12
+            size: 12,
+            weight: .regular
         )
         
         return label
@@ -82,8 +82,8 @@ class LoginVC: UIViewController {
         label.configureCustomText(
             text: "New To StayConnected?",
             color: .primaryGray,
-            fontName: "InterR",
-            size: 12
+            size: 12,
+            weight: .regular
         )
         
         return label

@@ -49,8 +49,8 @@ class ProfileVC: UIViewController, AvatarDelegate {
         label.configureCustomText(
             text: "Profile",
             color: .black,
-            fontName: "InterB",
-            size: 20
+            size: 20,
+            weight: .bold
         )
         return label
     }()
@@ -60,8 +60,8 @@ class ProfileVC: UIViewController, AvatarDelegate {
         label.configureCustomText(
             text: "shawn allan",
             color: .black,
-            fontName: "InterR",
-            size: 17
+            size: 17,
+            weight: .bold
         )
         
         return label
@@ -72,8 +72,8 @@ class ProfileVC: UIViewController, AvatarDelegate {
         label.configureCustomText(
             text: "shawn@allan.com",
             color: .primaryGray,
-            fontName: "InterR",
-            size: 15
+            size: 15,
+            weight: .regular
         )
         
         return label
@@ -105,8 +105,8 @@ class ProfileVC: UIViewController, AvatarDelegate {
         label.configureCustomText(
             text: "INFORMATION",
             color: .primaryGray,
-            fontName: "InterB",
-            size: 13
+            size: 13,
+            weight: .bold
         )
         
         return label
@@ -147,8 +147,8 @@ class ProfileVC: UIViewController, AvatarDelegate {
         label.configureCustomText(
             text: "Score",
             color: .primaryGray,
-            fontName: "InterB",
-            size: 17
+            size: 17,
+            weight: .bold
         )
         
         return label
@@ -159,8 +159,8 @@ class ProfileVC: UIViewController, AvatarDelegate {
         label.configureCustomText(
             text: "234",
             color: .primaryGray,
-            fontName: "InterB",
-            size: 17
+            size: 17,
+            weight: .bold
         )
         
         return label
@@ -171,8 +171,8 @@ class ProfileVC: UIViewController, AvatarDelegate {
         label.configureCustomText(
             text: "Answered Questions",
             color: .primaryGray,
-            fontName: "InterB",
-            size: 17
+            size: 17,
+            weight: .bold
         )
         
         return label
@@ -183,8 +183,8 @@ class ProfileVC: UIViewController, AvatarDelegate {
         label.configureCustomText(
             text: "15",
             color: .primaryGray,
-            fontName: "InterB",
-            size: 17
+            size: 17,
+            weight: .bold
         )
         
         return label
@@ -203,8 +203,8 @@ class ProfileVC: UIViewController, AvatarDelegate {
         label.configureCustomText(
             text: "Log out",
             color: .primaryGray,
-            fontName: "InterB",
-            size: 17
+            size: 17,
+            weight: .bold
         )
         
         return label

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E36BBE5B2CFDCFF9004EB30F /* izziDateFormatter in Frameworks */ = {isa = PBXBuildFile; productRef = E36BBE5A2CFDCFF9004EB30F /* izziDateFormatter */; };
 		E3AC8CEF2CFB344500E740D3 /* NetworkManagerFramework in Frameworks */ = {isa = PBXBuildFile; productRef = E3AC8CEE2CFB344500E740D3 /* NetworkManagerFramework */; };
 /* End PBXBuildFile section */
 
@@ -70,6 +71,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E3AC8CEF2CFB344500E740D3 /* NetworkManagerFramework in Frameworks */,
+				E36BBE5B2CFDCFF9004EB30F /* izziDateFormatter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -131,6 +133,7 @@
 			name = "stayConnected-iOS";
 			packageProductDependencies = (
 				E3AC8CEE2CFB344500E740D3 /* NetworkManagerFramework */,
+				E36BBE5A2CFDCFF9004EB30F /* izziDateFormatter */,
 			);
 			productName = "stayConnected-iOS";
 			productReference = E3AC8C2C2CFB257000E740D3 /* stayConnected-iOS.app */;
@@ -216,6 +219,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				E3AC8CED2CFB344500E740D3 /* XCRemoteSwiftPackageReference "webService" */,
+				E36BBE592CFDCFF9004EB30F /* XCRemoteSwiftPackageReference "izziDateFormatter" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E3AC8C2D2CFB257000E740D3 /* Products */;
@@ -588,6 +592,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		E36BBE592CFDCFF9004EB30F /* XCRemoteSwiftPackageReference "izziDateFormatter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Desp0o/izziDateFormatter.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		E3AC8CED2CFB344500E740D3 /* XCRemoteSwiftPackageReference "webService" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Desp0o/webService.git";
@@ -599,6 +611,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E36BBE5A2CFDCFF9004EB30F /* izziDateFormatter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E36BBE592CFDCFF9004EB30F /* XCRemoteSwiftPackageReference "izziDateFormatter" */;
+			productName = izziDateFormatter;
+		};
 		E3AC8CEE2CFB344500E740D3 /* NetworkManagerFramework */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E3AC8CED2CFB344500E740D3 /* XCRemoteSwiftPackageReference "webService" */;

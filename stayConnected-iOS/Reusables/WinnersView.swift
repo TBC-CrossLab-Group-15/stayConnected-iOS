@@ -48,8 +48,8 @@ final class WinnersView: UIView {
         label.configureCustomText(
             text: firstName,
             color: .white,
-            fontName: "InterS",
-            size: 12
+            size: 12,
+            weight: .semibold
         )
         return label
     }()
@@ -59,8 +59,8 @@ final class WinnersView: UIView {
         label.configureCustomText(
             text: "\(score)",
             color: .white,
-            fontName: "InterB",
-            size: 15
+            size: 15,
+            weight: .bold
         )
         return label
     }()
@@ -70,8 +70,8 @@ final class WinnersView: UIView {
         label.configureCustomText(
             text: userName,
             color: .white,
-            fontName: "InterB",
-            size: 8
+            size: 8,
+            weight: .bold
         )
         return label
     }()

@@ -65,8 +65,8 @@ class AvatarCell: UITableViewCell {
         avatarName.configureCustomText(
             text: avatar,
             color: .black,
-            fontName: "InterB",
-            size: 16
+            size: 16,
+            weight: .bold
         )
     }
 

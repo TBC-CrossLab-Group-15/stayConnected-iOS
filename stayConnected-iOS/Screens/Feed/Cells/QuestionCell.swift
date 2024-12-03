@@ -125,24 +125,24 @@ final class QuestionCell: UITableViewCell {
         questionTitle.configureCustomText(
             text: question.title,
             color: .primaryGray,
-            fontName: "InterR",
             size: 13,
+            weight: .regular,
             lineNumber: 1
         )
         
         questionLabel.configureCustomText(
             text: question.title,
             color: .black,
-            fontName: "InterR",
             size: 15,
+            weight: .regular,
             lineNumber: 1
         )
         
         repCountLabel.configureCustomText(
             text: "replies: \(question.answers.count)",
             color: .primaryGray,
-            fontName: "InterR",
-            size: 15
+            size: 15,
+            weight: .regular
         )
         repCountLabel.font = UIFont.italicSystemFont(ofSize: 11)
         
@@ -152,9 +152,6 @@ final class QuestionCell: UITableViewCell {
             checkMark.isHidden = true
         }
         tagCollection.reloadData()
-        print(tagsArray.count)
-
-        print(tagsArray)
     }
 }
 

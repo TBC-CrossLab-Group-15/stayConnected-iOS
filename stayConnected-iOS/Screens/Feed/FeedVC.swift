@@ -33,8 +33,8 @@ final class FeedVC: UIViewController, FeedModelDelegate {
         label.configureCustomText(
             text: "Questions",
             color: .black,
-            fontName: "InterB",
-            size: 20
+            size: 20,
+            weight: .bold
         )
         
         return label
@@ -144,8 +144,8 @@ final class FeedVC: UIViewController, FeedModelDelegate {
         label.configureCustomText(
             text: "No questions yet",
             color: .primaryGray,
-            fontName: "InterR",
             size: 15,
+            weight: .bold,
             alignment: .center
         )
         
@@ -157,8 +157,8 @@ final class FeedVC: UIViewController, FeedModelDelegate {
         label.configureCustomText(
             text: "Be the first to ask one",
             color: .black,
-            fontName: "InterR",
-            size: 15
+            size: 15,
+            weight: .bold
         )
         return label
     }()
@@ -295,6 +295,11 @@ extension FeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
         
         return cell ?? TagCell()
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let currentTagName = viewModel.singleTag(whit: indexPath.row).name
+        viewModel.fetchDataWithTag(with: currentTagName)
+    }
 }
 
 extension FeedVC: UITableViewDelegate, UITableViewDataSource {
@@ -308,16 +313,16 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
         cell?.selectionStyle = .none
         let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
         cell?.configureCell(with: currentQuestion)
-        
+    
         return cell ?? QuestionCell()
     }
     
-    
-    //    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    //
-    //        let selectedQuestion = viewModel.singleQuestion(with: indexPath.row)
-    //
-    //    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
+        let vc  = DetailVC(questionModel: currentQuestion)
+        vc.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(vc, animated: true)
+    }
 }
 
 
