@@ -29,6 +29,14 @@ final class KeychainService {
         try keyService.string(forKey: "refreshToken")
     }
     
+    func checkAccessToken() throws -> Bool {
+        try keyService.hasItem(forKey: "accessToken")
+    }
+    
+    func checkRefreshToken() throws -> Bool {
+        try keyService.hasItem(forKey: "refreshToken")
+    }
+    
     func revokeToken() throws {
         let url = "https://stayconnected.lol/api/user/token/refresh/"
         let refreshToken = try retrieveRefreshToken()
