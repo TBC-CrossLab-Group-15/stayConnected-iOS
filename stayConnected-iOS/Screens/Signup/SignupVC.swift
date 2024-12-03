@@ -55,8 +55,8 @@ class SignUpVC: UIViewController {
     
     private let surnName = InputFieldReusable(
         isLabelHidden: false,
-        labelName: "Surname",
-        placeholder: "Surname",
+        labelName: "Last Name",
+        placeholder: "Last Name",
         isPassword: false
     )
     
@@ -197,7 +197,9 @@ class SignUpVC: UIViewController {
         let nameValue = name.value()
         let surnameValue = surnName.value()
         let isCorrectEmail = viewModel.isValidEmail(email.value())
+        let emailValue = email.value()
         let pwdValue = newPassword.value()
+        let confirmPwdValue = confirmPassword.value()
         let isEnglishChars = viewModel.stringCheck(nameValue)
         let isEnglishCharsSurname = viewModel.stringCheck(surnameValue)
         let isStrongPassword = viewModel.strongPasswordCheck(pwdValue)
@@ -237,6 +239,13 @@ class SignUpVC: UIViewController {
         guard isPasswordsEqual else {
             return errorModal(text: "Passwords not equal")
         }
-        print("sing up test")
+    
+        viewModel.signUpAction(
+            firstName: nameValue,
+            lastName: surnameValue,
+            email: emailValue,
+            password: pwdValue,
+            confirmPassword: confirmPwdValue
+        )
     }
 }

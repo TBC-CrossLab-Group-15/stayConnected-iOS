@@ -17,7 +17,7 @@ protocol TagsModelDelegate: AnyObject {
 }
 
 final class FeedViewModel {
-    private var apiLink = "http://localhost:3000/feed"
+    private var apiLink = "https://stayconnected.lol/api/posts/questions/"
     private let tagApiLink = "https://stayconnected.lol/api/posts/tags/"
     weak var delegate: FeedModelDelegate?
     weak var tagsDelegate: TagsModelDelegate?

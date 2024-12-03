@@ -214,10 +214,7 @@ class LoginVC: UIViewController {
             return errorModal(text: "enter password")
         }
         
-        viewModel.postData()
-        
-        let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
-        sceneDelegate?.window?.rootViewController = TabBarController()
+        viewModel.loginAction(email: userNameValue, password: passwordValue)
     }
     
     private func resetPassword() {

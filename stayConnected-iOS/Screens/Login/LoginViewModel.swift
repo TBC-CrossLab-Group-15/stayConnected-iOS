@@ -16,6 +16,7 @@ struct ResponseBody: Codable {
 }
 
 import NetworkManagerFramework
+import UIKit
 
 final class LoginViewModel {
     private let postService: PostServiceProtocol
@@ -24,22 +25,29 @@ final class LoginViewModel {
         self.postService = postService
     }
     
-    func postData() {
+    func loginAction(email: String, password: String) {
+        let url = "https://stayconnected.lol/api/user/login/"
         
-        let url = "http://localhost:3000/questPost"
-            
-            let body = RequestBody(name: "John Doe", age: 30)
-            let headers = ["Authorization": "Bearer token"]
-            
+        let body = LoginRequest(email: email, password: password)
         
         Task {
             do {
-                let response: ResponseBody = try await postService.postData(urlString: url, headers: headers, body: body)
-                        print("Response: \(response)")
+                let response: LoginResponse = try await postService.postData(urlString: url, headers: nil, body: body)
+                print("Response: \(response)")
+                print("🟢")
+                
+                DispatchQueue.main.async {[weak self] in
+                    self?.navigationToFeed()
+                }
             } catch {
                 print("Error: \(error)")
-
+                print("🔴")
             }
         }
+    }
+    
+    private func navigationToFeed() {
+        let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
+        sceneDelegate?.window?.rootViewController = TabBarController()
     }
 }
