@@ -20,8 +20,10 @@ import UIKit
 
 final class LoginViewModel {
     private let postService: PostServiceProtocol
+    private let keyService: KeychainService
     
-    init(postService: PostServiceProtocol = PostService()) {
+    init(postService: PostServiceProtocol = PostService(), keyService: KeychainService = KeychainService()) {
+        self.keyService = keyService
         self.postService = postService
     }
     
@@ -35,6 +37,8 @@ final class LoginViewModel {
                 let response: LoginResponse = try await postService.postData(urlString: url, headers: nil, body: body)
                 print("Response: \(response)")
                 print("🟢")
+                
+                try keyService.storeTokens(access: response.access, refresh: response.refresh)
                 
                 DispatchQueue.main.async {[weak self] in
                     self?.navigationToFeed()

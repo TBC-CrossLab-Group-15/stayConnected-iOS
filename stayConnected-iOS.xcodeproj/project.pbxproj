@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E36BBE5B2CFDCFF9004EB30F /* izziDateFormatter in Frameworks */ = {isa = PBXBuildFile; productRef = E36BBE5A2CFDCFF9004EB30F /* izziDateFormatter */; };
+		E3A979FA2CFF6DD1004647F3 /* SimpleKeychain in Frameworks */ = {isa = PBXBuildFile; productRef = E3A979F92CFF6DD1004647F3 /* SimpleKeychain */; };
 		E3AC8CEF2CFB344500E740D3 /* NetworkManagerFramework in Frameworks */ = {isa = PBXBuildFile; productRef = E3AC8CEE2CFB344500E740D3 /* NetworkManagerFramework */; };
 /* End PBXBuildFile section */
 
@@ -70,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E3A979FA2CFF6DD1004647F3 /* SimpleKeychain in Frameworks */,
 				E3AC8CEF2CFB344500E740D3 /* NetworkManagerFramework in Frameworks */,
 				E36BBE5B2CFDCFF9004EB30F /* izziDateFormatter in Frameworks */,
 			);
@@ -134,6 +136,7 @@
 			packageProductDependencies = (
 				E3AC8CEE2CFB344500E740D3 /* NetworkManagerFramework */,
 				E36BBE5A2CFDCFF9004EB30F /* izziDateFormatter */,
+				E3A979F92CFF6DD1004647F3 /* SimpleKeychain */,
 			);
 			productName = "stayConnected-iOS";
 			productReference = E3AC8C2C2CFB257000E740D3 /* stayConnected-iOS.app */;
@@ -220,6 +223,7 @@
 			packageReferences = (
 				E3AC8CED2CFB344500E740D3 /* XCRemoteSwiftPackageReference "webService" */,
 				E36BBE592CFDCFF9004EB30F /* XCRemoteSwiftPackageReference "izziDateFormatter" */,
+				E3A979F82CFF6DD1004647F3 /* XCRemoteSwiftPackageReference "SimpleKeychain" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E3AC8C2D2CFB257000E740D3 /* Products */;
@@ -600,6 +604,14 @@
 				kind = branch;
 			};
 		};
+		E3A979F82CFF6DD1004647F3 /* XCRemoteSwiftPackageReference "SimpleKeychain" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/auth0/SimpleKeychain";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
 		E3AC8CED2CFB344500E740D3 /* XCRemoteSwiftPackageReference "webService" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Desp0o/webService.git";
@@ -615,6 +627,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E36BBE592CFDCFF9004EB30F /* XCRemoteSwiftPackageReference "izziDateFormatter" */;
 			productName = izziDateFormatter;
+		};
+		E3A979F92CFF6DD1004647F3 /* SimpleKeychain */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E3A979F82CFF6DD1004647F3 /* XCRemoteSwiftPackageReference "SimpleKeychain" */;
+			productName = SimpleKeychain;
 		};
 		E3AC8CEE2CFB344500E740D3 /* NetworkManagerFramework */ = {
 			isa = XCSwiftPackageProductDependency;

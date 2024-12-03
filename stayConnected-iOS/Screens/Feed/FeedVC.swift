@@ -9,6 +9,7 @@ import UIKit
 
 final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate {
     private let viewModel: FeedViewModel
+    private let keyService: KeychainService
     
     private let spacerOne: UIView = {
         let view = UIView()
@@ -184,8 +185,9 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate {
         return tableView
     }()
     
-    init(viewModel: FeedViewModel = FeedViewModel()) {
+    init(viewModel: FeedViewModel = FeedViewModel(), keyService: KeychainService = KeychainService()) {
         self.viewModel = viewModel
+        self.keyService = keyService
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -205,6 +207,14 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate {
         viewModel.delegate = self
         viewModel.tagsDelegate = self
         
+        do {
+               let token = try keyService.retrieveAccessToken()
+               print("Access token retrieved: \(token)")
+               // You can use the token here for authentication or other purposes
+           } catch {
+               print("Failed to retrieve access token: \(error)")
+               // Handle the error (e.g., show an alert or take other actions)
+           }
         setupUI()
     }
     

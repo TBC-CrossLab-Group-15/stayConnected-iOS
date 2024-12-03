@@ -1,5 +1,5 @@
 {
-  "originHash" : "48150c393353723d0336c8dba4a67ee785c8a850026a2e4d3e55fd236c75986d",
+  "originHash" : "16c492d36e6ad340a50b6024d8f4ed04758e9c4f66f70be2e78fcc815b7067b8",
   "pins" : [
     {
       "identity" : "izzidateformatter",
@@ -8,6 +8,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "cf7f8ffffcec0ee80160b070ac1b077e15b7eaa2"
+      }
+    },
+    {
+      "identity" : "simplekeychain",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/auth0/SimpleKeychain",
+      "state" : {
+        "revision" : "b694f155907b189bc82e93586695a26f558c742f",
+        "version" : "1.2.0"
       }
     },
     {
