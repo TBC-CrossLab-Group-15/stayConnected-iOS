@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LoginVC: UIViewController {
+class LoginVC: UIViewController, LoginNavigationDelegate {
     private let viewModel: LoginViewModel
     private let isSmallScreen = UIScreen.main.bounds.height < 800 ? true : false
     private lazy var spacerOne: UIView = {
@@ -147,6 +147,8 @@ class LoginVC: UIViewController {
     
     private func setupUI() {
         view.backgroundColor = .white
+        viewModel.delegate = self
+        
         view.addSubview(screenTitle)
         view.addSubview(userNameInput)
         view.addSubview(pwdStack)
@@ -229,6 +231,10 @@ class LoginVC: UIViewController {
         let alert = UIAlertController(title: "Error", message: text, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Try Again", style: .default, handler: nil))
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    func navigateToFeed() {
+        navigationController?.setViewControllers([TabBarController()], animated: true)
     }
 }
 

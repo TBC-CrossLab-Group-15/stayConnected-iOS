@@ -10,6 +10,7 @@ import Foundation
 
 class ProfileVC: UIViewController, AvatarDelegate {
     private let viewModel: ProfileViewModel
+    private let keychainService: KeychainService
     
     private lazy var spacerOne: UIView = {
         let view = UIView()
@@ -210,8 +211,9 @@ class ProfileVC: UIViewController, AvatarDelegate {
         return label
     }()
     
-    init(viewModel: ProfileViewModel = ProfileViewModel()) {
+    init(viewModel: ProfileViewModel = ProfileViewModel(), keychainService: KeychainService = KeychainService()) {
         self.viewModel = viewModel
+        self.keychainService = keychainService
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -324,11 +326,17 @@ class ProfileVC: UIViewController, AvatarDelegate {
         print("my answers tapped")
     }
     
-    @objc func logOut() {
+    @objc func logOut() throws {
         print("Log out initiated")
+        try keychainService.removeTokens()
         
-        let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
-        sceneDelegate?.window?.rootViewController = LoginVC ()
+        if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+            let loginViewController = LoginVC()
+            let navigationController = UINavigationController(rootViewController: loginViewController)
+            
+            sceneDelegate.window?.rootViewController = navigationController
+            sceneDelegate.window?.makeKeyAndVisible()
+        }
     }
     
     @objc func chooseAvatars() {

@@ -7,13 +7,15 @@
 import SimpleKeychain
 import NetworkManagerFramework
 
-final class KeychainService {
+protocol TokenRetrieveProtocol {
+    func retrieveRefreshToken() throws -> String
+}
+
+final class KeychainService: TokenRetrieveProtocol {
     let keyService: SimpleKeychain
-    let webService: PostServiceProtocol
     
-    init(keyService: SimpleKeychain = SimpleKeychain(), webService: PostServiceProtocol = PostService()) {
+    init(keyService: SimpleKeychain = SimpleKeychain()) {
         self.keyService = keyService
-        self.webService = webService
     }
     
     func storeTokens(access: String, refresh: String) throws {
@@ -37,24 +39,8 @@ final class KeychainService {
         try keyService.hasItem(forKey: "refreshToken")
     }
     
-    func revokeToken() throws {
-        let url = "https://stayconnected.lol/api/user/token/refresh/"
-        let refreshToken = try retrieveRefreshToken()
-        
-        let body = RefreshTokenModel(refresh: refreshToken)
-        
-        Task {
-            do {
-                let response: AccessTokenModel = try await webService.postData(
-                    urlString: url,
-                    headers: nil,
-                    body: body
-                )
-                print("Response: \(response)")
-                
-            } catch {
-                print("Error: \(error)")
-            }
-        }
+    func removeTokens() throws {
+        try keyService.deleteItem(forKey: "accessToken")
+        try keyService.deleteItem(forKey: "refreshToken")
     }
 }

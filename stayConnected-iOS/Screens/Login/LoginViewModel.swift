@@ -5,22 +5,17 @@
 //  Created by Despo on 30.11.24.
 //
 
-struct RequestBody: Codable {
-    let name: String
-    let age: Int
-}
-
-struct ResponseBody: Codable {
-    let success: Bool
-    let message: String
-}
-
 import NetworkManagerFramework
 import UIKit
+
+protocol LoginNavigationDelegate: AnyObject {
+    func navigateToFeed()
+}
 
 final class LoginViewModel {
     private let postService: PostServiceProtocol
     private let keyService: KeychainService
+    weak var delegate: LoginNavigationDelegate?
     
     init(postService: PostServiceProtocol = PostService(), keyService: KeychainService = KeychainService()) {
         self.keyService = keyService
@@ -41,17 +36,12 @@ final class LoginViewModel {
                 try keyService.storeTokens(access: response.access, refresh: response.refresh)
                 
                 DispatchQueue.main.async {[weak self] in
-                    self?.navigationToFeed()
+                    self?.delegate?.navigateToFeed()
                 }
             } catch {
                 print("Error: \(error)")
                 print("🔴")
             }
         }
-    }
-    
-    private func navigationToFeed() {
-        let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
-        sceneDelegate?.window?.rootViewController = TabBarController()
     }
 }
