@@ -13,7 +13,7 @@ protocol FeedModelDelegate: AnyObject {
 }
 
 final class FeedViewModel {
-    private var apiLink = "http://localhost:3000/feed"
+    private var apiLink = "https://stayconnected.lol/api/posts/questions"
     weak var delegate: FeedModelDelegate?
     private let webService: NetworkServiceProtocol
     
@@ -37,8 +37,8 @@ final class FeedViewModel {
     private func fetchdata(api: String) {
         Task {
             do {
-                let fetchedData: QuestionsResponse = try await webService.fetchData(urlString: apiLink, headers: [:])
-                questionsArray = fetchedData.response
+                let fetchedData: [QuestionModel] = try await webService.fetchData(urlString: apiLink, headers: [:])
+                questionsArray = fetchedData
                 DispatchQueue.main.async {[weak self] in
                     self?.delegate?.didDataFetched()
                 }
