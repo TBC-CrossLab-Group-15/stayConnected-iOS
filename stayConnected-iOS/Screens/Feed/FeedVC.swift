@@ -206,15 +206,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate {
 
         viewModel.delegate = self
         viewModel.tagsDelegate = self
-        
-        do {
-               let token = try keyService.retrieveAccessToken()
-               print("Access token retrieved: \(token)")
-               // You can use the token here for authentication or other purposes
-           } catch {
-               print("Failed to retrieve access token: \(error)")
-               // Handle the error (e.g., show an alert or take other actions)
-           }
+    
         setupUI()
     }
     
