@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class FeedVC: UIViewController, FeedModelDelegate {
+final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate {
     private let viewModel: FeedViewModel
     
     private let spacerOne: UIView = {
@@ -203,6 +203,7 @@ final class FeedVC: UIViewController, FeedModelDelegate {
         navigationController?.setNavigationBarHidden(true, animated: false)
 
         viewModel.delegate = self
+        viewModel.tagsDelegate = self
         
         setupUI()
     }
@@ -275,6 +276,11 @@ final class FeedVC: UIViewController, FeedModelDelegate {
         questionsTable.reloadData()
     }
     
+    func didTagsFetched() {
+        tagCollection.reloadData()
+        print("donwlaoded tags")
+    }
+    
     private func addPost() {
         present(PostAdd(), animated: true, completion: nil)
     }
@@ -284,7 +290,7 @@ final class FeedVC: UIViewController, FeedModelDelegate {
 extension FeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.tagsCount
+        return viewModel.tagsArray.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

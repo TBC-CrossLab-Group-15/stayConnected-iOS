@@ -7,9 +7,10 @@
 
 import UIKit
 
-class PostAdd: UIViewController, UITextFieldDelegate {
+class PostAdd: UIViewController, UITextFieldDelegate, TagsModelDelegate {
     private let viewModel: PostAddViewModel
-    
+    private let feedViewModel: FeedViewModel
+
     private let lineOne:UIView = {
         let lineView = UIView()
         lineView.translatesAutoresizingMaskIntoConstraints = false
@@ -155,8 +156,9 @@ class PostAdd: UIViewController, UITextFieldDelegate {
     
     let postInput = AddFieldReusable(placeHolder: "Type your question here")
     
-    init(viewModel: PostAddViewModel = PostAddViewModel()) {
+    init(viewModel: PostAddViewModel = PostAddViewModel(), feedViewModel: FeedViewModel = FeedViewModel()) {
         self.viewModel = viewModel
+        self.feedViewModel = feedViewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -167,6 +169,7 @@ class PostAdd: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
+        self.feedViewModel.tagsDelegate = self
 
         setupUI()
     }
@@ -188,6 +191,9 @@ class PostAdd: UIViewController, UITextFieldDelegate {
         view.addSubview(postInput)
         setupConstraints()
         
+        cancelButton.addAction(UIAction(handler: { [weak self] _ in
+            self?.closeModal()
+        }), for: .touchUpInside)
         postInput.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -241,8 +247,9 @@ class PostAdd: UIViewController, UITextFieldDelegate {
             chooseTagCollection.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
             chooseTagCollection.topAnchor.constraint(equalTo: lineThree.topAnchor, constant: 10),
             chooseTagCollection.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-            chooseTagCollection.heightAnchor.constraint(equalToConstant: 100),
-            
+            chooseTagCollection.heightAnchor.constraint(lessThanOrEqualToConstant: 130),
+
+
             postInput.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             postInput.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             postInput.topAnchor.constraint(equalTo: chooseTagCollection.bottomAnchor, constant: 10),
@@ -257,6 +264,10 @@ class PostAdd: UIViewController, UITextFieldDelegate {
     private func addPostToDataBase() {
 //        viewModel.postQuestion(subject: subjectInput.text ?? "", question: postInput.text ?? "")
     }
+    
+    func didTagsFetched() {
+        chooseTagCollection.reloadData()
+    }
 }
 
 
@@ -269,7 +280,7 @@ extension PostAdd: UICollectionViewDelegate, UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TagCell", for: indexPath) as? TagCell
         let singleTag = collectionView == tagCollectionPostAdd ? viewModel.singleActiveTag(at: indexPath.row) : viewModel.singleInactiveTag(at: indexPath.row)
         
-        cell?.configureWithName(with: singleTag)
+        cell?.configureWithName(with: singleTag.name)
         return cell ?? TagCell()
     }
     
