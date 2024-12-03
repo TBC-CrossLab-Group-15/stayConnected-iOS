@@ -16,8 +16,8 @@ final class LeaderBoardVC: UIViewController {
         label.configureCustomText(
             text: "Liderboard",
             color: .black,
-            fontName: "InterB",
-            size: 20
+            size: 20,
+            weight: .bold
         )
         return label
     }()

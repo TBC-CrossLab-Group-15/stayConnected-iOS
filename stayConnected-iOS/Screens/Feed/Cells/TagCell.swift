@@ -56,8 +56,8 @@ final class TagCell: UICollectionViewCell {
         tagLabel.configureCustomText(
             text: model.name,
             color: .primaryViolet,
-            fontName: "InterR",
             size: 14,
+            weight: .regular,
             lineNumber: 1
         )
     }
@@ -66,8 +66,8 @@ final class TagCell: UICollectionViewCell {
         tagLabel.configureCustomText(
             text: tagName,
             color: .primaryViolet,
-            fontName: "InterR",
             size: 14,
+            weight: .bold,
             lineNumber: 1
         )
     }

@@ -33,8 +33,8 @@ final class FeedVC: UIViewController, FeedModelDelegate {
         label.configureCustomText(
             text: "Questions",
             color: .black,
-            fontName: "InterB",
-            size: 20
+            size: 20,
+            weight: .bold
         )
         
         return label
@@ -144,8 +144,8 @@ final class FeedVC: UIViewController, FeedModelDelegate {
         label.configureCustomText(
             text: "No questions yet",
             color: .primaryGray,
-            fontName: "InterR",
             size: 15,
+            weight: .bold,
             alignment: .center
         )
         
@@ -157,8 +157,8 @@ final class FeedVC: UIViewController, FeedModelDelegate {
         label.configureCustomText(
             text: "Be the first to ask one",
             color: .black,
-            fontName: "InterR",
-            size: 15
+            size: 15,
+            weight: .bold
         )
         return label
     }()
@@ -294,6 +294,11 @@ extension FeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
         cell?.configureCell(with: currentTag)
         
         return cell ?? TagCell()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let currentTagName = viewModel.singleTag(whit: indexPath.row).name
+        viewModel.fetchDataWithTag(with: currentTagName)
     }
 }
 

@@ -48,6 +48,8 @@ class DetailVC: UIViewController {
         return table
     }()
     
+    private let inputAnswer = AddFieldReusable(placeHolder: "Type your reply here")
+    
     init(questionModel: QuestionModel,
          izziDateFormatter: IzziDateFormatterProtocol = IzziDateFormatter()
     ) {
@@ -68,13 +70,15 @@ class DetailVC: UIViewController {
     
     private func setupUI() {
         view.backgroundColor = .white
+        inputAnswer.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(backButton)
         view.addSubview(topicTitle)
         view.addSubview(postTitle)
         view.addSubview(askedDate)
         view.addSubview(commentsTable)
-
+        view.addSubview(inputAnswer)
+        
         configureView()
         setupConstraints()
     }
@@ -99,7 +103,11 @@ class DetailVC: UIViewController {
             commentsTable.topAnchor.constraint(equalTo: askedDate.bottomAnchor, constant: 20),
             commentsTable.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             commentsTable.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
-            commentsTable.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
+            commentsTable.bottomAnchor.constraint(equalTo: inputAnswer.topAnchor, constant: -12),
+            
+            inputAnswer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            inputAnswer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
+            inputAnswer.bottomAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
         ])
     }
     
@@ -107,15 +115,15 @@ class DetailVC: UIViewController {
         topicTitle.configureCustomText(
             text: questionModel.title,
             color: .primaryGray,
-            fontName: "InterR",
-            size: 13
+            size: 13,
+            weight: .regular
         )
         
         postTitle.configureCustomText(
             text: questionModel.text,
             color: .black,
-            fontName: "InterR",
-            size: 16
+            size: 16,
+            weight: .regular
         )
         let date = izziDateFormatter.formatDate(currentFormat: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", currentDate: questionModel.createDate, format: "dd/MM/yyyy")
         
@@ -124,8 +132,8 @@ class DetailVC: UIViewController {
         askedDate.configureCustomText(
             text: "\(date) at \(time)",
             color: .primaryGray,
-            fontName: "InterR",
-            size: 13
+            size: 13,
+            weight: .regular
         )
     }
 }

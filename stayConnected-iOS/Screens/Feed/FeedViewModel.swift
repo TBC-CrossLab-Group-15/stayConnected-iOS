@@ -13,6 +13,7 @@ protocol FeedModelDelegate: AnyObject {
 }
 
 final class FeedViewModel {
+    private var apiLink = "http://localhost:3000/feed"
     weak var delegate: FeedModelDelegate?
     private let webService: NetworkServiceProtocol
     
@@ -30,12 +31,10 @@ final class FeedViewModel {
     
     init(webService: NetworkServiceProtocol = NetworkService()) {
         self.webService = webService
-        fetchdata()
+        fetchdata(api: apiLink)
     }
     
-    private func fetchdata() {
-        let apiLink = "http://localhost:3000/feed"
-        
+    private func fetchdata(api: String) {
         Task {
             do {
                 let fetchedData: QuestionsResponse = try await webService.fetchData(urlString: apiLink, headers: [:])
@@ -73,5 +72,11 @@ final class FeedViewModel {
     
     func singleTag(whit index: Int) -> TagModel {
         tagsArray[index]
+    }
+    
+    func fetchDataWithTag(with tagName: String) {
+        apiLink = "http://localhost:3000/feed/\(tagName)"
+        fetchdata(api: apiLink)
+        print(apiLink)
     }
 }

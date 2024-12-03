@@ -39,8 +39,8 @@ class SignUpVC: UIViewController {
         label.configureCustomText(
             text: "Sign Up",
             color: .black,
-            fontName: "InterB",
-            size: 30
+            size: 30,
+            weight: .bold
         )
         
         return label

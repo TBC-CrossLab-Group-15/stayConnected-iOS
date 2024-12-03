@@ -71,8 +71,8 @@ class CommentCell: UITableViewCell {
         label.configureCustomText(
             text: "Accepted ✓",
             color: .primaryViolet,
-            fontName: "InterB",
-            size: 13
+            size: 13,
+            weight: .bold
         )
         return label
     }()
@@ -130,8 +130,8 @@ class CommentCell: UITableViewCell {
         userName.configureCustomText(
             text: answer.user.firstName,
             color: .black,
-            fontName: "inter",
-            size: 15
+            size: 15,
+            weight: .bold
         )
         
         avatarImage.image = UIImage(named: "\(answer.user.avatar.name)")
@@ -140,15 +140,15 @@ class CommentCell: UITableViewCell {
         commentDate.configureCustomText(
             text: date,
             color: .black,
-            fontName: "inter",
-            size: 12
+            size: 12,
+            weight: .thin
         )
         
         commentBody.configureCustomText(
             text: answer.text,
             color: .primaryGray,
-            fontName: "InterR",
-            size: 15
+            size: 15,
+            weight: .regular
         )
         
         accepted.isHidden = answer.isCorrect ? false : true

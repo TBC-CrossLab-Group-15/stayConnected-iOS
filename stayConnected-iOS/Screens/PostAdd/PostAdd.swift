@@ -43,8 +43,8 @@ class PostAdd: UIViewController, UITextFieldDelegate {
         label.configureCustomText(
             text: "Add Question",
             color: .black,
-            fontName: "Inter",
-            size: 16
+            size: 16,
+            weight: .regular
         )
         return label
     }()
@@ -75,8 +75,8 @@ class PostAdd: UIViewController, UITextFieldDelegate {
         leftLabel.configureCustomText(
             text: "Subject: ",
             color: .primaryGray,
-            fontName: "InterR",
-            size: 15
+            size: 15,
+            weight: .regular
         )
         leftLabelContainer.addSubview(leftLabel)
         
@@ -108,8 +108,8 @@ class PostAdd: UIViewController, UITextFieldDelegate {
         label.configureCustomText(
             text: "Tag: ",
             color: .primaryGray,
-            fontName: "InterR",
-            size: 15
+            size: 15,
+            weight: .regular
         )
         return label
     }()
@@ -153,35 +153,7 @@ class PostAdd: UIViewController, UITextFieldDelegate {
         return stack
     }()
     
-    private lazy var postInput: UITextField = {
-        let field = UITextField()
-        field.translatesAutoresizingMaskIntoConstraints = false
-        field.placeholder = "Type your question here"
-        field.clipsToBounds = true
-        field.layer.borderWidth = 1
-        field.layer.borderColor = UIColor.primaryGray.cgColor
-        field.layer.cornerRadius = 8
-        field.keyboardType = .default
-        
-        let leftContainer = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 47))
-        field.leftView = leftContainer
-        field.leftViewMode = .always
-
-        let rightIconContainer = UIView(frame: CGRect(x: 0, y: 0, width: 32, height: 47))
-        let sendIcon = UIButton(type: .custom)
-        sendIcon.setImage(UIImage(named: "sendQuestionIcon"), for: .normal)
-        sendIcon.tintColor = .primaryGray
-        sendIcon.frame = CGRect(x: 0, y: rightIconContainer.frame.height / 2 - 12, width: 24, height: 24)
-        sendIcon.addAction(UIAction(handler: { [weak self] action in
-            self?.addPostToDataBase()
-        }), for: .touchUpInside)
-        
-        rightIconContainer.addSubview(sendIcon)
-        field.rightView = rightIconContainer
-        field.rightViewMode = .always
-        
-        return field
-    }()
+    let postInput = AddFieldReusable(placeHolder: "Type your question here")
     
     init(viewModel: PostAddViewModel = PostAddViewModel()) {
         self.viewModel = viewModel
@@ -201,7 +173,7 @@ class PostAdd: UIViewController, UITextFieldDelegate {
     
     private func setupUI() {
         view.backgroundColor = .white
-        subjectInput.translatesAutoresizingMaskIntoConstraints = false
+        postInput.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(lineOne)
         view.addSubview(lineTwo)
         view.addSubview(lineThree)
@@ -215,6 +187,8 @@ class PostAdd: UIViewController, UITextFieldDelegate {
         view.addSubview(subjectInput)
         view.addSubview(postInput)
         setupConstraints()
+        
+        postInput.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func setupConstraints() {
@@ -281,7 +255,7 @@ class PostAdd: UIViewController, UITextFieldDelegate {
     }
     
     private func addPostToDataBase() {
-        viewModel.postQuestion(subject: subjectInput.text ?? "", question: postInput.text ?? "")
+//        viewModel.postQuestion(subject: subjectInput.text ?? "", question: postInput.text ?? "")
     }
 }
 
