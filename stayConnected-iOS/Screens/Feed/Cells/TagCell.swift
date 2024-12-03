@@ -52,7 +52,7 @@ final class TagCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell(with model: TagModel) {
+    func configureCell(with model: Tag) {
         tagLabel.configureCustomText(
             text: model.name,
             color: .primaryViolet,

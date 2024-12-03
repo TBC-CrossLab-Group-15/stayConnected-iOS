@@ -15,23 +15,26 @@ protocol DidTagsRefreshedInactiveTags: AnyObject {
     func didTagsRefreshedInactives()
 }
 
-final class PostAddViewModel {
+final class PostAddViewModel: TagsModelDelegate {
+    
+    
     weak var delegate: DidTagsRefreshed?
     weak var delegateInactiveTags: DidTagsRefreshedInactiveTags?
+    var feedViewModel: FeedViewModel
+    var activeTags: [Tag] = []
+    var inactiveTags: [Tag] = []
+    
+    init(feedViewModel: FeedViewModel = FeedViewModel()) {
+           self.feedViewModel = feedViewModel
+        feedViewModel.tagsDelegate = self
+       }
+    
+    func didTagsFetched() {
+        inactiveTags = feedViewModel.tagsArray
+        print(inactiveTags)
+    }
 
-    var activeTags: [String] = []
-    var inactiveTags: [String] = [
-        "iOS",
-        "Android",
-        "Docker",
-        "Js",
-        "HTML",
-        "macOS",
-        "Windows",
-        "Linux"
-    ]
-
-    func singleActiveTag(at index: Int) -> String {
+    func singleActiveTag(at index: Int) -> Tag {
         return activeTags[index]
     }
 
@@ -41,7 +44,7 @@ final class PostAddViewModel {
         delegateInactiveTags?.didTagsRefreshedInactives()
     }
 
-    func singleInactiveTag(at index: Int) -> String {
+    func singleInactiveTag(at index: Int) -> Tag {
         return inactiveTags[index]
     }
 

@@ -12,55 +12,72 @@ protocol FeedModelDelegate: AnyObject {
     func didDataFetched()
 }
 
+protocol TagsModelDelegate: AnyObject {
+    func didTagsFetched()
+}
+
 final class FeedViewModel {
-    private var apiLink = "https://stayconnected.lol/api/posts/questions"
+    private var apiLink = "http://localhost:3000/feed"
+    private let tagApiLink = "https://stayconnected.lol/api/posts/tags/"
     weak var delegate: FeedModelDelegate?
+    weak var tagsDelegate: TagsModelDelegate?
+
     private let webService: NetworkServiceProtocol
     
     private var questionsArray: [QuestionModel] = []
     
-    private var tagsArray = [
-        TagModel(name: "swift", endPoint: "/"),
-        TagModel(name: "iOS", endPoint: "/"),
-        TagModel(name: "react", endPoint: "/"),
-        TagModel(name: "js", endPoint: "/"),
-        TagModel(name: "figma", endPoint: "/"),
-        TagModel(name: "android", endPoint: "/"),
-        TagModel(name: "tvOS", endPoint: "/"),
-    ]
+    var tagsArray: [Tag] = []
     
     init(webService: NetworkServiceProtocol = NetworkService()) {
         self.webService = webService
-        fetchdata(api: apiLink)
+        fetchData(api: apiLink)
+        fetchTagsData(api: tagApiLink)
     }
     
-    private func fetchdata(api: String) {
-        Task {
-            do {
-                let fetchedData: [QuestionModel] = try await webService.fetchData(urlString: apiLink, headers: [:])
-                questionsArray = fetchedData
-                DispatchQueue.main.async {[weak self] in
-                    self?.delegate?.didDataFetched()
+    private func fetchData(api: String) {
+            Task {
+                do {
+                    let fetchedData: [QuestionModel] = try await webService.fetchData(urlString: api, headers: [:])
+                    questionsArray = fetchedData
+                    DispatchQueue.main.async {[weak self] in
+                        self?.delegate?.didDataFetched()
+                    }
+                } catch {
+                    handleNetworkError(error)
                 }
-            } catch NetworkError.httpResponseError {
+            }
+        }
+    
+    private func fetchTagsData(api: String) {
+            Task {
+                do {
+                    let fetchedData: [Tag] = try await webService.fetchData(urlString: api, headers: [:])
+                    tagsArray = fetchedData
+                    DispatchQueue.main.async {[weak self] in
+                        self?.tagsDelegate?.didTagsFetched()
+                    }
+                } catch {
+                    handleNetworkError(error)
+                }
+            }
+        }
+    
+    private func handleNetworkError(_ error: Error) {
+            switch error {
+            case NetworkError.httpResponseError:
                 print("Response is not HTTPURLResponse or missing")
-            } catch NetworkError.invalidURL {
+            case NetworkError.invalidURL:
                 print("Invalid URL")
-            } catch NetworkError.statusCodeError(let statusCode) {
+            case NetworkError.statusCodeError(let statusCode):
                 print("Unexpected status code: \(statusCode)")
-            } catch NetworkError.noData {
+            case NetworkError.noData:
                 print("No data received from server")
-            } catch NetworkError.decodeError(let error) {
+            case NetworkError.decodeError(let error):
                 print("Decode error: \(error.localizedDescription)")
-            } catch {
+            default:
                 print("Unexpected error: \(error.localizedDescription)")
             }
         }
-    }
-    
-    var tagsCount: Int {
-        tagsArray.count
-    }
     
     var questionsCount: Int {
         questionsArray.count
@@ -70,13 +87,13 @@ final class FeedViewModel {
         questionsArray[index]
     }
     
-    func singleTag(whit index: Int) -> TagModel {
+    func singleTag(whit index: Int) -> Tag {
         tagsArray[index]
     }
     
     func fetchDataWithTag(with tagName: String) {
         apiLink = "http://localhost:3000/feed/\(tagName)"
-        fetchdata(api: apiLink)
+        fetchData(api: apiLink)
         print(apiLink)
     }
 }
