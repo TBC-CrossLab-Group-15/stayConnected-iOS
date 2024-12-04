@@ -1,5 +1,12 @@
 import Foundation
 
+struct QuestionsResponse: Codable {
+    let count: Int
+    let next: Int?
+    let previous: Int?
+    let results: [QuestionModel]
+}
+
 struct QuestionModel: Codable {
     let id: Int
     let tags: [Tag]
@@ -48,6 +55,5 @@ struct User: Codable {
 }
 
 struct Avatar: Codable {
-    let id: Int
     let name: String
 }

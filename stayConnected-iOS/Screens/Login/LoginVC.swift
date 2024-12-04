@@ -234,7 +234,8 @@ class LoginVC: UIViewController, LoginNavigationDelegate {
     }
     
     func navigateToFeed() {
-        navigationController?.setViewControllers([TabBarController()], animated: true)
+        let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
+        sceneDelegate?.window?.rootViewController = TabBarController()
     }
 }
 

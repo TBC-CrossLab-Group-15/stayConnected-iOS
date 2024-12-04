@@ -22,7 +22,8 @@ final class Router: UIViewController {
             let isToken = try keychainService.checkAccessToken()
             
             if isToken {
-                navigationController?.pushViewController(TabBarController(), animated: false)
+                let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
+                sceneDelegate?.window?.rootViewController = TabBarController()
             } else {
                 navigationController?.pushViewController(LoginVC(), animated: false)
             }

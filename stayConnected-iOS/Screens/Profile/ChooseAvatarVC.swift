@@ -64,12 +64,13 @@ extension ChooseAvatarVC: UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "AvatarCell", for: indexPath) as? AvatarCell
         let currentAvatar = viewModel.singleAvatar(at: indexPath.row)
         cell?.selectionStyle = .none
-        cell?.configureCell(with: currentAvatar)
+        cell?.configureCell(with: currentAvatar.name)
         return cell ?? AvatarCell()
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let currentAvatar = viewModel.singleAvatar(at: indexPath.row)
-        viewModel.setAvatar(with: currentAvatar)
+        viewModel.setAvatar(with: currentAvatar.name)
+        viewModel.postedAvatar(name: currentAvatar.name)
     }
 }
