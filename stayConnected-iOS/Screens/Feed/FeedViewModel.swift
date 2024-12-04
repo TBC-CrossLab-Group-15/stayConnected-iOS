@@ -123,4 +123,30 @@ final class FeedViewModel {
             }
         }
     }
+    
+    func searchByTitle(with title: String) {
+        if title == "" {
+            isSearching = false
+            let apiLink = "https://stayconnected.lol/api/posts/questions/?page=1&page_size=\(pageCount)"
+            fetchData(api: apiLink)
+        }
+        
+        guard !title.isEmpty else { return }
+        
+        isSearching = true
+        let apiLink = "https://stayconnected.lol/api/posts/search/question/?search=\(title)"
+        
+        Task {
+            do {
+                let searchedPosts: [QuestionModel] = try await webService.fetchData(urlString: apiLink, headers: nil)
+                questionsArray = []
+                questionsArray = searchedPosts
+                DispatchQueue.main.async {[weak self] in
+                    self?.searchedInfoDelegate?.didSearchedInfoFetched()
+                }
+            } catch {
+                handleNetworkError(error)
+            }
+        }
+    }
 }

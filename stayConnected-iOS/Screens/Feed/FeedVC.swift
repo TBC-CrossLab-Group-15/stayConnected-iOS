@@ -109,6 +109,9 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         field.leftView = leftIconContainer
         field.leftViewMode = .always
         
+        field.addAction(UIAction(handler: {[weak self] _ in
+            self?.viewModel.searchByTitle(with: field.text ?? "")
+        }), for: .editingChanged)
         return field
     }()
     
