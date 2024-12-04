@@ -18,6 +18,7 @@ protocol TagsModelDelegate: AnyObject {
 
 final class FeedViewModel {
     private var pageCount = 0
+    private var totalCount = 0
     private let tagApiLink = "https://stayconnected.lol/api/posts/tags/"
     weak var delegate: FeedModelDelegate?
     weak var tagsDelegate: TagsModelDelegate?
@@ -39,6 +40,10 @@ final class FeedViewModel {
             do {
                 let fetchedData: QuestionsResponse = try await webService.fetchData(urlString: api, headers: [:])
                 questionsArray = fetchedData.results
+                totalCount = fetchedData.count
+                print(totalCount)
+//                print(fetchedData)
+                questionsArray.append(contentsOf: fetchedData.results)
                 DispatchQueue.main.async {[weak self] in
                     self?.delegate?.didDataFetched()
                 }
@@ -80,8 +85,10 @@ final class FeedViewModel {
     }
     
     func updatePages() {
-        pageCount += 5
-        let apiLink = "https://stayconnected.lol/api/posts/questions/?page=1&page_size=\(pageCount)"
-        fetchData(api: apiLink)
+        if pageCount <= totalCount {
+            pageCount += 5
+            let apiLink = "https://stayconnected.lol/api/posts/questions/?page=1&page_size=\(pageCount)"
+            fetchData(api: apiLink)
+        }
     }
 }
