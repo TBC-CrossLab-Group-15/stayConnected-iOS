@@ -25,8 +25,7 @@ final class Router: UIViewController {
                 let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
                 sceneDelegate?.window?.rootViewController = TabBarController()
             } else {
-                let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
-                sceneDelegate?.window?.rootViewController = LoginVC()
+                navigationController?.pushViewController(LoginVC(), animated: false)
             }
         } catch {
             print("Error checking token: \(error)")

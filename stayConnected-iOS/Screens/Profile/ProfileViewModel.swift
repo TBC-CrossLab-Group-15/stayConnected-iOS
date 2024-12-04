@@ -23,6 +23,8 @@ final class ProfileViewModel {
     private let keyService: KeychainService
     private let webService: NetworkServiceProtocol
     private let postService: PostServiceProtocol
+    private let putService: PutServiceProtocol
+
     private let tokenNetwork: TokenNetwork
     var profileInfo: ProfileModel?
     private var token = ""
@@ -34,12 +36,14 @@ final class ProfileViewModel {
         webService: NetworkServiceProtocol = NetworkService(),
         keyService: KeychainService = KeychainService(),
         tokenNetwork: TokenNetwork = TokenNetwork(),
-        postService: PostServiceProtocol = PostService()
+        postService: PostServiceProtocol = PostService(),
+        putService: PutServiceProtocol = PutService()
     ) {
         self.webService = webService
         self.keyService = keyService
         self.tokenNetwork = tokenNetwork
         self.postService = postService
+        self.putService = putService
     }
     
     func fetchData(api: String) {
@@ -94,33 +98,34 @@ final class ProfileViewModel {
     private func getAvatars(api: String, headers: [String: String]) async throws {
         let fetchedAvatars: [Avatar] = try await webService.fetchData(urlString: api, headers: headers)
         avatarsArray = fetchedAvatars
-        print(avatarsArray)
     }
     
     
-    private func sendAvatarToDb(avatarId: String, headers: [String : String]) async throws {
-        let url = "https://stayconnected.lol/api/user/profile/\(avatarId)/"
-        let body = AvatarReqBodyModel(id: Int(avatarId) ?? 0)
-        
+    private func sendAvatarToDb(name: String, headers: [String : String]) async throws {
+        let url = "https://stayconnected.lol/api/user/profile/3/"
+        let body = AvatarReqBodyModel(avatarId: name )
+        print(body)
         Task {
             do {
-                let response: LoginResponse = try await postService.postData(urlString: url, headers: headers, body: body)
-        
-                try keyService.storeTokens(access: response.access, refresh: response.refresh)
+                let response: AvatarReqBodyModel = try await putService.putData(urlString: url, headers: headers, body: body)
+                print("------------")
+                print(response)
             } catch {
                 print("Error: \(error)")
             }
         }
     }
     
-    func postedAvatar(avatarId: String){
+    func postedAvatar(name: String){
+        print(name)
         Task {
             do {
                 token = try keyService.retrieveAccessToken()
                 print("✅ Token Retrieved: \(token)")
                 
                 let headers = ["Authorization": "Bearer \(token)"]
-                try await sendAvatarToDb(avatarId: avatarId, headers: headers)
+                try await sendAvatarToDb(name: name, headers: headers)
+                print(headers)
             } catch {
                 if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
                     print("⚠️ Token expired, attempting to renew...")

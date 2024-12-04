@@ -13,4 +13,11 @@ struct LoginRequest: Codable {
 struct LoginResponse: Codable {
     let access: String
     let refresh: String
+    let userID: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case access
+        case refresh
+        case userID = "user_id"
+    }
 }

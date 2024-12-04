@@ -367,11 +367,13 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         let lastName = profileInfo.lastName
         let score = profileInfo.rating
         let myAnswers = profileInfo.myAnswers
+        let avatar = profileInfo.avatar
 
         DispatchQueue.main.async {
             self.fullNameLabel.text = "\(firstName) \(lastName)"
             self.pointsLabel.text = "\(score)"
             self.asnwersCountLabel.text = "\(myAnswers)"
+            self.avatarImage.image = UIImage(named: avatar ?? "testUser")
         }
     }
 }

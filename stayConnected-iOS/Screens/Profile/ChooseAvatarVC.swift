@@ -71,6 +71,6 @@ extension ChooseAvatarVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let currentAvatar = viewModel.singleAvatar(at: indexPath.row)
         viewModel.setAvatar(with: currentAvatar.name)
-        viewModel.postedAvatar(avatarId: String(currentAvatar.id))
+        viewModel.postedAvatar(name: currentAvatar.name)
     }
 }

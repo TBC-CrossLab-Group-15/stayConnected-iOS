@@ -24,5 +24,9 @@ struct ProfileModel: Codable {
 }
 
 struct AvatarReqBodyModel: Codable {
-    let id: Int
+    let avatarId: String
+    
+    enum CodingKeys: String, CodingKey {
+        case avatarId = "avatar_id"
+    }
 }
