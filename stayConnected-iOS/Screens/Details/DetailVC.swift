@@ -11,6 +11,7 @@ import izziDateFormatter
 class DetailVC: UIViewController {
     private let questionModel: QuestionModel
     private let izziDateFormatter: IzziDateFormatterProtocol
+    private let viewModel: DetailViewModel
     
     private lazy var backButton: UIButton = {
         let button = UIButton()
@@ -50,11 +51,14 @@ class DetailVC: UIViewController {
     
     private let inputAnswer = AddFieldReusable(placeHolder: "Type your reply here")
     
-    init(questionModel: QuestionModel,
-         izziDateFormatter: IzziDateFormatterProtocol = IzziDateFormatter()
+    init(
+        questionModel: QuestionModel,
+        izziDateFormatter: IzziDateFormatterProtocol = IzziDateFormatter(),
+        viewModel: DetailViewModel = DetailViewModel()
     ) {
         self.questionModel = questionModel
         self.izziDateFormatter = izziDateFormatter
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -81,6 +85,14 @@ class DetailVC: UIViewController {
         
         configureView()
         setupConstraints()
+        
+        inputAnswer.onSendAction = {[weak self] in
+            guard let self = self else { return }
+            let inputValue = inputAnswer.value()
+            let api = "https://stayconnected.lol/api/posts/answers/"
+            
+            viewModel.sendAnswer(api: api, answer: inputValue, postID: self.questionModel.id)
+        }
     }
     
     private func setupConstraints() {

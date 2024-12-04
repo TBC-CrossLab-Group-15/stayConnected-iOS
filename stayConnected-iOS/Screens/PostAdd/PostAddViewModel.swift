@@ -91,12 +91,12 @@ final class PostAddViewModel {
                 print("✅ Token Retrieved: \(token)")
                 
                 let headers = ["Authorization": "Bearer \(token)"]
-                try await postQuestion(subject: subject, question: question, headers: headers)
+                try await postQuestion(api: api, subject: subject, question: question, headers: headers)
             } catch {
                 if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
                     print("⚠️ Token expired, attempting to renew...")
                     await tokenNetwork.renewTokenAndRetry(api: api) {[weak self] api, headers in
-                        try await self?.postQuestion(subject: subject, question: question, headers: headers)
+                        try await self?.postQuestion(api: api, subject: subject, question: question, headers: headers)
                     }
                 } else {
                     print("❌ Failed to post question: \(error.localizedDescription)")
@@ -106,14 +106,13 @@ final class PostAddViewModel {
         }
     }
     
-    func postQuestion(subject: String, question: String, headers: [String: String]) async throws {
+    func postQuestion(api: String, subject: String, question: String, headers: [String: String]) async throws {
         let tagIds = activeTags.map { $0.id }
         
-        let url = "https://stayconnected.lol/api/posts/questions/"
         let body = PostModel(title: subject, text: question, tags: tagIds)
         
         do {
-            let _ : PostModelResponse = try await postService.postData(urlString: url, headers: headers, body: body)
+            let _ : PostModelResponse = try await postService.postData(urlString: api, headers: headers, body: body)
         } catch {
             print("Error: \(error)")
             throw error
