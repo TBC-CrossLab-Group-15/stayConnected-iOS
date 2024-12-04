@@ -12,25 +12,35 @@ protocol FeedModelDelegate: AnyObject {
     func didDataFetched()
 }
 
+protocol SearchedInfoDelegate: AnyObject {
+    func didSearchedInfoFetched()
+}
+
 protocol TagsModelDelegate: AnyObject {
     func didTagsFetched()
+}
+
+protocol RefreshFeedDelegate: AnyObject {
+    func didFeedRefreshed()
 }
 
 final class FeedViewModel {
     private var pageCount = 0
     private var totalCount = 0
+    private var isSearching = false
     private let tagApiLink = "https://stayconnected.lol/api/posts/tags/"
+    private let webService: NetworkServiceProtocol
+    private var questionsArray: [QuestionModel] = []
     weak var delegate: FeedModelDelegate?
     weak var tagsDelegate: TagsModelDelegate?
+    weak var feedRefreshDelegate: RefreshFeedDelegate?
+    weak var searchedInfoDelegate: SearchedInfoDelegate?
     
-    private let webService: NetworkServiceProtocol
-    
-    private var questionsArray: [QuestionModel] = []
-    
-    var tagsArray: [Tag] = []
+    var tagsArray: [Tag] = [Tag(id: -1, name: "All")]
     
     init(webService: NetworkServiceProtocol = NetworkService()) {
         self.webService = webService
+        
         fetchTagsData(api: tagApiLink)
         updatePages()
     }
@@ -42,7 +52,6 @@ final class FeedViewModel {
                 questionsArray = fetchedData.results
                 totalCount = fetchedData.count
                 print(totalCount)
-//                print(fetchedData)
                 questionsArray.append(contentsOf: fetchedData.results)
                 DispatchQueue.main.async {[weak self] in
                     self?.delegate?.didDataFetched()
@@ -57,7 +66,7 @@ final class FeedViewModel {
         Task {
             do {
                 let fetchedData: [Tag] = try await webService.fetchData(urlString: api, headers: [:])
-                tagsArray = fetchedData
+                tagsArray.append(contentsOf: fetchedData)
                 DispatchQueue.main.async {[weak self] in
                     self?.tagsDelegate?.didTagsFetched()
                 }
@@ -79,16 +88,39 @@ final class FeedViewModel {
         tagsArray[index]
     }
     
-    func fetchDataWithTag(with tagName: String) {
-        let apiLink = "http://localhost:3000/feed/\(tagName)"
+    func updatePages() {
+        guard !isSearching else { return }
+        guard pageCount <= totalCount else { return }
+        
+        pageCount += 10
+        let apiLink = "https://stayconnected.lol/api/posts/questions/?page=1&page_size=\(pageCount)"
         fetchData(api: apiLink)
+        
+        print("❤️")
     }
     
-    func updatePages() {
-        if pageCount <= totalCount {
-            pageCount += 5
+    func searchByTag(with tag: String) {
+        
+        if tag == "All" {
+            isSearching = false
             let apiLink = "https://stayconnected.lol/api/posts/questions/?page=1&page_size=\(pageCount)"
             fetchData(api: apiLink)
+        }
+        
+        isSearching = true
+        let apiLink = "https://stayconnected.lol/api/posts/search/?search=\(tag)"
+        
+        Task {
+            do {
+                let searchedPosts: [QuestionModel] = try await webService.fetchData(urlString: apiLink, headers: nil)
+                questionsArray = []
+                questionsArray.append(contentsOf: searchedPosts)
+                DispatchQueue.main.async {[weak self] in
+                    self?.searchedInfoDelegate?.didSearchedInfoFetched()
+                }
+            } catch {
+                handleNetworkError(error)
+            }
         }
     }
 }

@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate {
+final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, SearchedInfoDelegate {
     private let viewModel: FeedViewModel
     private let keyService: KeychainService
     
@@ -198,6 +198,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         noQstack.isHidden = viewModel.questionsCount > 0 ? true : false
+        questionsTable.reloadData()
     }
     
     override func viewDidLoad() {
@@ -206,7 +207,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate {
         
         viewModel.delegate = self
         viewModel.tagsDelegate = self
-        questionsTable.reloadData()
+        viewModel.searchedInfoDelegate = self
         setupUI()
     }
     
@@ -282,6 +283,12 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate {
         tagCollection.reloadData()
     }
     
+    func didSearchedInfoFetched() {
+        noQstack.isHidden = viewModel.questionsCount > 0 ? true : false
+        questionsTable.isHidden = viewModel.questionsCount > 0 ? false : true
+        questionsTable.reloadData()
+    }
+    
     private func addPost() {
         present(PostAdd(), animated: true, completion: nil)
     }
@@ -299,13 +306,13 @@ extension FeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
         
         let currentTag = viewModel.singleTag(whit: indexPath.row)
         cell?.configureCell(with: currentTag)
-        
         return cell ?? TagCell()
     }
     
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let currentTagName = viewModel.singleTag(whit: indexPath.row).name
-        viewModel.fetchDataWithTag(with: currentTagName)
+        viewModel.searchByTag(with: currentTagName)
+        print(currentTagName)
     }
 }
 
@@ -321,7 +328,7 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
         let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
         cell?.configureCell(with: currentQuestion)
         
-        if indexPath.row == viewModel.questionsCount - 1 {
+        if indexPath.row == viewModel.questionsCount - 1 && indexPath.row >= 10 {
             viewModel.updatePages()
         }
         

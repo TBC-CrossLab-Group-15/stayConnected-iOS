@@ -18,14 +18,22 @@ final class PostAddViewModel {
     private let tokenNetwork: TokenNetwork
     private let postService: PostServiceProtocol
     weak var delegate: DidTagsRefreshed?
+    var feedViewModel: FeedViewModel
     var activeTags: [Tag] = []
     var inactiveTags: [Tag] = []
     
-    init(webService: NetworkServiceProtocol = NetworkService(), keyService: KeychainService = KeychainService(), tokenNetwork: TokenNetwork = TokenNetwork(), postService: PostServiceProtocol = PostService()) {
+    init(
+        webService: NetworkServiceProtocol = NetworkService(),
+        keyService: KeychainService = KeychainService(),
+        tokenNetwork: TokenNetwork = TokenNetwork(),
+        postService: PostServiceProtocol = PostService(),
+        feedViewModel: FeedViewModel = FeedViewModel()
+    ) {
         self.webService = webService
         self.keyService = keyService
         self.tokenNetwork = tokenNetwork
         self.postService = postService
+        self.feedViewModel = feedViewModel
         
         fetchTags(api: "https://stayconnected.lol/api/posts/tags/")
     }
