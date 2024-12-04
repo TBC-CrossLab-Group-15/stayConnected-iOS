@@ -9,6 +9,8 @@ import NetworkManagerFramework
 
 protocol TokenRetrieveProtocol {
     func retrieveRefreshToken() throws -> String
+    func storeAccessTokens(access: String) throws
+    func retrieveAccessToken() throws -> String
 }
 
 final class KeychainService: TokenRetrieveProtocol {
@@ -21,6 +23,10 @@ final class KeychainService: TokenRetrieveProtocol {
     func storeTokens(access: String, refresh: String) throws {
         try keyService.set(access, forKey: "accessToken")
         try keyService.set(refresh, forKey: "refreshToken")
+    }
+    
+    func storeAccessTokens(access: String) throws {
+        try keyService.set(access, forKey: "accessToken")
     }
     
     func retrieveAccessToken() throws -> String{

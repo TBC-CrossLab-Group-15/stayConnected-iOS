@@ -8,7 +8,7 @@
 import UIKit
 import Foundation
 
-class ProfileVC: UIViewController, AvatarDelegate {
+class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     private let viewModel: ProfileViewModel
     private let keychainService: KeychainService
     
@@ -59,7 +59,7 @@ class ProfileVC: UIViewController, AvatarDelegate {
     private lazy var fullNameLabel: UILabel = {
         let label = UILabel()
         label.configureCustomText(
-            text: "shawn allan",
+            text: "",
             color: .black,
             size: 17,
             weight: .bold
@@ -71,7 +71,7 @@ class ProfileVC: UIViewController, AvatarDelegate {
     private lazy var mailLabel: UILabel = {
         let label = UILabel()
         label.configureCustomText(
-            text: "shawn@allan.com",
+            text: "",
             color: .primaryGray,
             size: 15,
             weight: .regular
@@ -182,7 +182,7 @@ class ProfileVC: UIViewController, AvatarDelegate {
     private lazy var asnwersCountLabel: UILabel = {
         let label = UILabel()
         label.configureCustomText(
-            text: "15",
+            text: "",
             color: .primaryGray,
             size: 17,
             weight: .bold
@@ -221,11 +221,18 @@ class ProfileVC: UIViewController, AvatarDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.fetchData(api: "https://stayconnected.lol/api/user/currentuser/")
+        viewModel.fetchedAvatars(api: "https://stayconnected.lol/api/user/avatars/")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
         
         viewModel.delegate = self
+        viewModel.userInfoDelegate = self
         
         setupUI()
     }
@@ -352,5 +359,19 @@ class ProfileVC: UIViewController, AvatarDelegate {
     
     func didAvatarChanged() {
         avatarImage.image = UIImage(named: viewModel.avatarName)
+    }
+    
+    func didUserInfoFetched() {
+        guard let profileInfo = viewModel.profileInfo else { return }
+        let firstName = profileInfo.firstName
+        let lastName = profileInfo.lastName
+        let score = profileInfo.rating
+        let myAnswers = profileInfo.myAnswers
+
+        DispatchQueue.main.async {
+            self.fullNameLabel.text = "\(firstName) \(lastName)"
+            self.pointsLabel.text = "\(score)"
+            self.asnwersCountLabel.text = "\(myAnswers)"
+        }
     }
 }
