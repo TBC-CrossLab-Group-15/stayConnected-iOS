@@ -2,8 +2,8 @@ import Foundation
 
 struct QuestionsResponse: Codable {
     let count: Int
-    let next: Int?
-    let previous: Int?
+    let next: String?
+    let previous: String?
     let results: [QuestionModel]
 }
 
@@ -43,7 +43,7 @@ struct Answer: Codable {
 
 struct User: Codable {
     let id: Int
-    let avatar: Avatar?
+    let avatar: String?
     let firstName: String
     let lastName: String
     

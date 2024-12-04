@@ -17,7 +17,7 @@ protocol TagsModelDelegate: AnyObject {
 }
 
 final class FeedViewModel {
-    private var apiLink = "https://stayconnected.lol/api/posts/questions/?page=1&page_size=10"
+    private var pageCount = 0
     private let tagApiLink = "https://stayconnected.lol/api/posts/tags/"
     weak var delegate: FeedModelDelegate?
     weak var tagsDelegate: TagsModelDelegate?
@@ -30,8 +30,8 @@ final class FeedViewModel {
     
     init(webService: NetworkServiceProtocol = NetworkService()) {
         self.webService = webService
-        fetchData(api: apiLink)
         fetchTagsData(api: tagApiLink)
+        updatePages()
     }
     
     private func fetchData(api: String) {
@@ -75,8 +75,13 @@ final class FeedViewModel {
     }
     
     func fetchDataWithTag(with tagName: String) {
-        apiLink = "http://localhost:3000/feed/\(tagName)"
+        let apiLink = "http://localhost:3000/feed/\(tagName)"
         fetchData(api: apiLink)
-        print(apiLink)
+    }
+    
+    func updatePages() {
+        pageCount += 5
+        let apiLink = "https://stayconnected.lol/api/posts/questions/?page=1&page_size=\(pageCount)"
+        fetchData(api: apiLink)
     }
 }

@@ -203,10 +203,10 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
-
+        
         viewModel.delegate = self
         viewModel.tagsDelegate = self
-    
+        questionsTable.reloadData()
         setupUI()
     }
     
@@ -280,7 +280,6 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate {
     
     func didTagsFetched() {
         tagCollection.reloadData()
-        print("donwlaoded tags")
     }
     
     private func addPost() {
@@ -321,7 +320,11 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
         cell?.selectionStyle = .none
         let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
         cell?.configureCell(with: currentQuestion)
-    
+        
+        if indexPath.row == viewModel.questionsCount - 1 {
+            viewModel.updatePages()
+        }
+        
         return cell ?? QuestionCell()
     }
     
