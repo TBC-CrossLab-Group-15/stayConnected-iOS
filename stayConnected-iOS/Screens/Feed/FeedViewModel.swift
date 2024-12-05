@@ -45,14 +45,13 @@ final class FeedViewModel {
         updatePages()
     }
     
-    private func fetchData(api: String) {
+    func fetchData(api: String) {
         Task {
             do {
                 let fetchedData: QuestionsResponse = try await webService.fetchData(urlString: api, headers: [:])
-                questionsArray = fetchedData.results
                 totalCount = fetchedData.count
-                print(totalCount)
-                questionsArray.append(contentsOf: fetchedData.results)
+                questionsArray = fetchedData.results
+
                 DispatchQueue.main.async {[weak self] in
                     self?.delegate?.didDataFetched()
                 }

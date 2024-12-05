@@ -170,7 +170,7 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     private lazy var answeredQLabel: UILabel = {
         let label = UILabel()
         label.configureCustomText(
-            text: "Answered Questions",
+            text: "Answeres",
             color: .primaryGray,
             size: 17,
             weight: .bold

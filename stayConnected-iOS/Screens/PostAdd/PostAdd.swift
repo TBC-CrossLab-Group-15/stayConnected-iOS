@@ -9,7 +9,7 @@ import UIKit
 
 class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
     private let viewModel: PostAddViewModel
-    
+
     private let lineOne:UIView = {
         let lineView = UIView()
         lineView.translatesAutoresizingMaskIntoConstraints = false
@@ -256,8 +256,8 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
         ])
     }
     
-    private func closeModal() {
-        dismiss(animated: true, completion: nil)
+    func closeModal() {
+        dismiss(animated: true , completion: nil )
     }
     
     private func addPostToDataBase() {

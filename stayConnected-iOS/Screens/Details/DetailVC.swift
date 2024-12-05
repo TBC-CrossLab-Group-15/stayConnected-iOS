@@ -8,7 +8,7 @@
 import UIKit
 import izziDateFormatter
 
-class DetailVC: UIViewController {
+class DetailVC: UIViewController, ReloadAnswersDelegate {
     private var questionModel: QuestionModel
     private let izziDateFormatter: IzziDateFormatterProtocol
     private let viewModel: DetailViewModel
@@ -37,7 +37,7 @@ class DetailVC: UIViewController {
         let label = UILabel()
         return label
     }()
-    
+        
     private lazy var commentsTable: UITableView = {
         let table = UITableView()
         table.showsVerticalScrollIndicator = false
@@ -68,21 +68,17 @@ class DetailVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupUI()
     }
     
     private func setupUI() {
+        viewModel.delegate = self
+        viewModel.getSinglePost(with: questionModel.id)
         view.backgroundColor = .white
         inputAnswer.translatesAutoresizingMaskIntoConstraints = false
         
-        Task {
-            do {
-                questionModel = try await viewModel.getSinglePost(with: 34)
-            } catch {
-                
-            }
-        }
+        
         
         view.addSubview(backButton)
         view.addSubview(topicTitle)
@@ -91,15 +87,17 @@ class DetailVC: UIViewController {
         view.addSubview(commentsTable)
         view.addSubview(inputAnswer)
         
-        configureView()
         setupConstraints()
+        configureView()
         
         inputAnswer.onSendAction = {[weak self] in
             guard let self = self else { return }
             let inputValue = inputAnswer.value()
-            let api = "https://stayconnected.lol/api/posts/answers/"
             
+            let api = "https://stayconnected.lol/api/posts/answers/"
             viewModel.collectAnswerInfo(api: api, answer: inputValue, postID: self.questionModel.id)
+            viewModel.getSinglePost(with: questionModel.id)
+            inputAnswer.clearInput()
         }
     }
     
@@ -150,26 +148,29 @@ class DetailVC: UIViewController {
         let time = izziDateFormatter.formatDate(currentFormat: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", currentDate: questionModel.createDate, format: "HH:mm")
         
         askedDate.configureCustomText(
-            text: "\(date) at \(time)",
+            text: "\(questionModel.user.firstName) asked \(date) at \(time)",
             color: .primaryGray,
             size: 13,
             weight: .regular
         )
     }
+    
+    func didAnswersFetched() {
+        commentsTable.reloadData()
+        print("⚠️")
+    }
 }
 
 extension DetailVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        questionModel.answers.count
+        viewModel.answersArray.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CommentCell", for: indexPath) as? CommentCell
-        let currentAnswer = questionModel.answers[indexPath.row]
+        let currentAnswer = viewModel.singleAnswer(at: indexPath.row)
         cell?.configureCell(with: currentAnswer)
         cell?.selectionStyle = .none
         return cell ?? CommentCell()
     }
-    
-    
 }

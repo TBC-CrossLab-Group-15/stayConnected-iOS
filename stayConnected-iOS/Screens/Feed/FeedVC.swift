@@ -10,7 +10,7 @@ import UIKit
 final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, SearchedInfoDelegate {
     private let viewModel: FeedViewModel
     private let keyService: KeychainService
-    
+        
     private let spacerOne: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -201,6 +201,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         noQstack.isHidden = viewModel.questionsCount > 0 ? true : false
+        viewModel.updatePages()
         questionsTable.reloadData()
     }
     
@@ -215,6 +216,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
     }
     
     private func setupUI() {
+        
         view.backgroundColor = .white
         
         view.addSubview(topStack)
@@ -280,7 +282,10 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         noQstack.isHidden = viewModel.questionsCount > 0 ? true : false
         questionsTable.isHidden = viewModel.questionsCount > 0 ? false : true
         questionsTable.reloadData()
+        print("reloaded 🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢")
     }
+    
+    
     
     func didTagsFetched() {
         tagCollection.reloadData()
@@ -331,7 +336,7 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
         let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
         cell?.configureCell(with: currentQuestion)
         
-        if indexPath.row == viewModel.questionsCount - 1 && indexPath.row >= 10 {
+        if indexPath.row == viewModel.questionsCount - 1 {
             viewModel.updatePages()
         }
         
@@ -340,6 +345,7 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
+        print(currentQuestion.id)
         let vc  = DetailVC(questionModel: currentQuestion)
         vc.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(vc, animated: true)

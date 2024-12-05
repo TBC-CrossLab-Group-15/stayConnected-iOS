@@ -30,7 +30,7 @@ final class LeaderBoardViewModel {
             do {
                 let response: [LeaderBoardModel] = try await webService.fetchData(urlString: apiLink, headers: nil)
                 leaderBoardArray = response
-                print(response)
+//                print(response)
                 DispatchQueue.main.async {[weak self] in
                     self?.delegate?.didBoardFetched()
                 }

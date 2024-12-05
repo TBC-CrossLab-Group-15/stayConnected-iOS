@@ -42,16 +42,13 @@ final class PostAddViewModel {
         Task {
             do {
                 let token = try keyService.retrieveAccessToken()
-                print("✅ Token Retrieved: \(token)")
                 
                 let headers = ["Authorization": "Bearer \(token)"]
                 try await getTags(api: api, headers: headers)
             } catch {
                 if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
-                    print("⚠️ Token expired, attempting to renew...")
                     await tokenNetwork.renewTokenAndRetry(api: api, retryFunction: getTags)
                 } else {
-                    print("❌ Failed to fetch data: \(error.localizedDescription)")
                     handleNetworkError(error)
                 }
             }
@@ -88,13 +85,10 @@ final class PostAddViewModel {
         Task {
             do {
                 let token = try keyService.retrieveAccessToken()
-                print("✅ Token Retrieved: \(token)")
-                
                 let headers = ["Authorization": "Bearer \(token)"]
                 try await postQuestion(api: api, subject: subject, question: question, headers: headers)
             } catch {
                 if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
-                    print("⚠️ Token expired, attempting to renew...")
                     await tokenNetwork.renewTokenAndRetry(api: api) {[weak self] api, headers in
                         try await self?.postQuestion(api: api, subject: subject, question: question, headers: headers)
                     }
