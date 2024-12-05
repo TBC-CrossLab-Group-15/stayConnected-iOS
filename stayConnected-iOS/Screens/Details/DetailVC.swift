@@ -44,7 +44,7 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
         label.configureCustomText(
             text: "No Comments Yet",
             color: .primaryViolet,
-            size: 24,
+            size: 22,
             weight: .heavy
         )
         label.isHidden = true
@@ -222,9 +222,14 @@ extension DetailVC: UITableViewDelegate, UITableViewDataSource {
         
         let currentAnswer = viewModel.singleAnswer(at: indexPath.row)
         
-        guard currentAnswer.user.id == Int(myID) else {
+        guard questionModel.user.id == Int(myID) else {
             return UISwipeActionsConfiguration()
         }
+        
+        guard currentAnswer.user.id != Int(myID) else {
+            return UISwipeActionsConfiguration()
+        }
+        
         
         if currentAnswer.isCorrect {
             let rejectedAnswer = UIContextualAction(style: .destructive, title: "Reject") {[weak self] action, view, completionHandler in
