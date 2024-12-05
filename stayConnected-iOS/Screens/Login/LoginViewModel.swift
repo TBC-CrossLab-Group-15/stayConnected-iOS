@@ -33,7 +33,7 @@ final class LoginViewModel {
         
                 try keyService.storeTokens(access: response.access, refresh: response.refresh)
                 try keyService.storeUserID(userID: String(response.userID))
-                
+                print(response.access)
                 DispatchQueue.main.async {[weak self] in
                     self?.delegate?.navigateToFeed()
                 }

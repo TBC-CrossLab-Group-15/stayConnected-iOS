@@ -266,9 +266,6 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         let tapGestureAvatar = UITapGestureRecognizer(target: self, action: #selector(chooseAvatars))
         avatarImage.addGestureRecognizer(tapGestureAvatar)
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapMyanswers))
-        secondStack.addGestureRecognizer(tapGesture)
-        
         let tapGestureL = UITapGestureRecognizer(target: self, action: #selector(logOut))
         thirdStack.addGestureRecognizer(tapGestureL)
         
@@ -327,10 +324,6 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
             lineThree.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             lineThree.heightAnchor.constraint(equalToConstant: 1),
         ])
-    }
-    
-    @objc func tapMyanswers() {
-        print("my answers tapped")
     }
     
     @objc func logOut() throws {
