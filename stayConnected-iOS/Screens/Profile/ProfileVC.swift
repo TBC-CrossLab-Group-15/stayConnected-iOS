@@ -229,7 +229,7 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.setNavigationBarHidden(true, animated: false)
+//        navigationController?.setNavigationBarHidden(true, animated: false)
         
         viewModel.delegate = self
         viewModel.userInfoDelegate = self

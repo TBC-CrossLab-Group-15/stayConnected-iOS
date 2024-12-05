@@ -7,9 +7,14 @@
 
 import UIKit
 
-class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
-    private let viewModel: PostAddViewModel
+protocol PresentedVCDelegate: AnyObject {
+    func didDismissPresentedVC()
+}
 
+class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
+    weak var delegate: PresentedVCDelegate?
+    private let viewModel: PostAddViewModel
+    
     private let lineOne:UIView = {
         let lineView = UIView()
         lineView.translatesAutoresizingMaskIntoConstraints = false
@@ -154,7 +159,7 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
     
     let postInput = AddFieldReusable(placeHolder: "Type your question here")
     
-    init(viewModel: PostAddViewModel = PostAddViewModel(), feedViewModel: FeedViewModel = FeedViewModel()) {
+    init(viewModel: PostAddViewModel = PostAddViewModel()) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -168,6 +173,13 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
         navigationController?.setNavigationBarHidden(true, animated: false)
         viewModel.delegate = self
         setupUI()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if isBeingDismissed {
+            delegate?.didDismissPresentedVC()
+        }
     }
     
     private func setupUI() {

@@ -20,9 +20,6 @@ final class TokenNetwork {
     }
     
     func getNewToken() async throws {
-        let oldToken = try? keyService.retrieveAccessToken()
-        print("⚠️ Old Token: \(oldToken ?? "Unavailable")")
-        
         guard let refreshToken = try? keyService.retrieveRefreshToken() else {
             print("❌ Missing Refresh Token")
             throw NetworkError.noData

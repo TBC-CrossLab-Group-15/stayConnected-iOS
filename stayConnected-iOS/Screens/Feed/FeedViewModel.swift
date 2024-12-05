@@ -28,9 +28,12 @@ final class FeedViewModel {
     private var pageCount = 0
     private var totalCount = 0
     private var isSearching = false
+    private var isFinishedPaging = false
     private let tagApiLink = "https://stayconnected.lol/api/posts/tags/"
     private let webService: NetworkServiceProtocol
     private var questionsArray: [QuestionModel] = []
+    private let keyService: KeychainService
+    private let tokenNetwork: TokenNetwork
     weak var delegate: FeedModelDelegate?
     weak var tagsDelegate: TagsModelDelegate?
     weak var feedRefreshDelegate: RefreshFeedDelegate?
@@ -38,24 +41,34 @@ final class FeedViewModel {
     
     var tagsArray: [Tag] = [Tag(id: -1, name: "All")]
     
-    init(webService: NetworkServiceProtocol = NetworkService()) {
+    init(
+        webService: NetworkServiceProtocol = NetworkService(),
+        keyService: KeychainService = KeychainService(),
+        tokenNetwork: TokenNetwork = TokenNetwork()
+    ) {
         self.webService = webService
-        
+        self.keyService = keyService
+        self.tokenNetwork = tokenNetwork
         fetchTagsData(api: tagApiLink)
-        updatePages()
+    }
+    
+    var questionsCount: Int {
+        questionsArray.count
     }
     
     func fetchData(api: String) {
+        print("⚠️")
         Task {
             do {
                 let fetchedData: QuestionsResponse = try await webService.fetchData(urlString: api, headers: [:])
                 totalCount = fetchedData.count
                 questionsArray = fetchedData.results
-
+                print("✅")
                 DispatchQueue.main.async {[weak self] in
                     self?.delegate?.didDataFetched()
                 }
             } catch {
+                print("❌")
                 handleNetworkError(error)
             }
         }
@@ -75,10 +88,6 @@ final class FeedViewModel {
         }
     }
     
-    var questionsCount: Int {
-        questionsArray.count
-    }
-    
     func singleQuestion(with index: Int) -> QuestionModel {
         questionsArray[index]
     }
@@ -89,14 +98,22 @@ final class FeedViewModel {
     
     func updatePages() {
         guard !isSearching else { return }
-        guard pageCount <= totalCount else { return }
-        
+        //        guard pageCount <= totalCount else { return }
+        //        isFinishedPaging = true
         pageCount += 10
         let apiLink = "https://stayconnected.lol/api/posts/questions/?page=1&page_size=\(pageCount)"
         fetchData(api: apiLink)
         
-        print("❤️")
+        print("count: \(pageCount) : total: \(totalCount)")
     }
+    
+    //    func renewFeed() {
+    //        if isFinishedPaging {
+    //            print("‼️ \(pageCount)")
+    //            let apiLink = "https://stayconnected.lol/api/posts/questions/?page=1&page_size=\(pageCount)"
+    //            fetchData(api: apiLink)
+    //        }
+    //    }
     
     func searchByTag(with tag: String) {
         
@@ -148,4 +165,39 @@ final class FeedViewModel {
             }
         }
     }
+    
+    func currentUserQuestions() {
+        let api = "https://stayconnected.lol/api/user/currentuserquestions/"
+        
+        Task {
+            
+            
+            do {
+                var token = try keyService.retrieveAccessToken()
+                let headers = ["Authorization": "Bearer \(token)"]
+                do{
+                    let response: [QuestionModel] = try await webService.fetchData(urlString: api, headers: headers)
+                    print(response)
+                    questionsArray = response
+                    DispatchQueue.main.async {[weak self] in
+                        self?.delegate?.didDataFetched()
+                    }
+                } catch {
+                    if case NetworkError.statusCodeError(statusCode: let statusCode) = error, statusCode == 401 {
+                        try await tokenNetwork.getNewToken()
+                        token = try keyService.retrieveAccessToken()
+                        
+                        let response: [QuestionModel] = try await webService.fetchData(urlString: api, headers: headers)
+                        questionsArray = response
+
+                        DispatchQueue.main.async {[weak self] in
+                            self?.delegate?.didDataFetched()
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+    
 }

@@ -187,7 +187,6 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
     
     func didAnswersFetched() {
         commentsTable.reloadData()
-        print("⚠️")
         
         if viewModel.answersArray.count == 0 {
             commentsTable.isHidden = true

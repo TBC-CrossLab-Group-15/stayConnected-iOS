@@ -7,10 +7,11 @@
 
 import UIKit
 
-final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, SearchedInfoDelegate {
+final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, SearchedInfoDelegate, PresentedVCDelegate {
+    
     private let viewModel: FeedViewModel
     private let keyService: KeychainService
-        
+    private let postAddVC: PostAdd
     private let spacerOne: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -71,6 +72,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         button.addAction(UIAction(handler: {[weak self] _ in
             self?.toggler = true
             self?.updateButtonColors()
+            self?.viewModel.updatePages()
         }), for: .touchUpInside)
         button.backgroundColor = toggler ? .primaryViolet : .primaryGray
         return button
@@ -86,6 +88,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         button.addAction(UIAction(handler: {[weak self] _ in
             self?.toggler = false
             self?.updateButtonColors()
+            self?.viewModel.currentUserQuestions()
         }), for: .touchUpInside)
         button.backgroundColor = toggler ? .primaryGray : .primaryViolet
         return button
@@ -188,9 +191,14 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         return tableView
     }()
     
-    init(viewModel: FeedViewModel = FeedViewModel(), keyService: KeychainService = KeychainService()) {
+    init(
+        viewModel: FeedViewModel = FeedViewModel(),
+        keyService: KeychainService = KeychainService(),
+        postAddVC: PostAdd = PostAdd()
+    ) {
         self.viewModel = viewModel
         self.keyService = keyService
+        self.postAddVC = postAddVC
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -202,7 +210,6 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         super.viewWillAppear(animated)
         noQstack.isHidden = viewModel.questionsCount > 0 ? true : false
         viewModel.updatePages()
-        questionsTable.reloadData()
     }
     
     override func viewDidLoad() {
@@ -216,7 +223,6 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
     }
     
     private func setupUI() {
-        
         view.backgroundColor = .white
         
         view.addSubview(topStack)
@@ -282,10 +288,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         noQstack.isHidden = viewModel.questionsCount > 0 ? true : false
         questionsTable.isHidden = viewModel.questionsCount > 0 ? false : true
         questionsTable.reloadData()
-        print("reloaded 🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢")
     }
-    
-    
     
     func didTagsFetched() {
         tagCollection.reloadData()
@@ -298,7 +301,12 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
     }
     
     private func addPost() {
-        present(PostAdd(), animated: true, completion: nil)
+        postAddVC.delegate = self
+        self.present(postAddVC, animated: true, completion: nil)
+    }
+    
+    func didDismissPresentedVC() {
+        viewModel.updatePages()
     }
 }
 
@@ -317,7 +325,7 @@ extension FeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
         return cell ?? TagCell()
     }
     
-     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let currentTagName = viewModel.singleTag(whit: indexPath.row).name
         viewModel.searchByTag(with: currentTagName)
         print(currentTagName)
