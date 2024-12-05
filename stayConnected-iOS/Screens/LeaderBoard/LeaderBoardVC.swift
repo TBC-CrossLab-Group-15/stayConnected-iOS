@@ -7,10 +7,9 @@
 
 import UIKit
 
-final class LeaderBoardVC: UIViewController {
-    
-    let arr = ["12", "12", "12","12", "12", "12","12", "12", "12","12"]
-    
+final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
+    private let viewModel: LeaderBoardViewModel
+        
     private lazy var screenTitle: UILabel = {
         let label = UILabel()
         label.configureCustomText(
@@ -72,11 +71,11 @@ final class LeaderBoardVC: UIViewController {
     
     private let firstPlace = WinnersView(
         colorForBorder: .firsPlaceBorder,
-        imageUrl: "https://picsum.photos/200",
-        positionIcon: "firsPositionIcon",
-        firstName: "leon",
-        score: 34,
-        userName: "johnatn"
+        imageUrl: "",
+        positionIcon: "",
+        firstName: "",
+        score: 0,
+        userName: ""
     )
     
     private let thirdPlace = WinnersView(
@@ -87,7 +86,18 @@ final class LeaderBoardVC: UIViewController {
         score: 34,
         userName: "johnatn"
     )
-
+    
+    init(
+        viewModel: LeaderBoardViewModel = LeaderBoardViewModel()
+    ) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
@@ -96,6 +106,9 @@ final class LeaderBoardVC: UIViewController {
     }
     
     private func setupUI(){
+        viewModel.delegate = self
+        viewModel.fetchLeaderBoard()
+        
         view.backgroundColor = .white
         view.addSubview(screenTitle)
         view.addSubview(horizonatlView)
@@ -150,17 +163,35 @@ final class LeaderBoardVC: UIViewController {
             leadBoardTabel.bottomAnchor.constraint(equalTo: boardView.bottomAnchor, constant: -16),
         ])
     }
+    
+    func didBoardFetched() {
+        self.leadBoardTabel.reloadData()
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let firstUser = self.viewModel.getSingleUser(at: 1)
+            print("🦧")
+            self.firstPlace.firstName = firstUser.firstName
+            self.firstPlace.userName = firstUser.lastName
+            self.firstPlace.score = firstUser.rating
+
+            self.firstPlace.setNeedsDisplay()
+            self.firstPlace.layoutIfNeeded()
+        }
+    }
+
 }
 
 extension LeaderBoardVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        arr.count
+        print(viewModel.leaderBoardArray.count)
+        return viewModel.leaderBoardArray.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "BoardCell", for: indexPath) as? BoardCell
-        let singleCell = arr[indexPath.row]
-        cell?.configureCell(with: singleCell)
+        let currentUser = viewModel.getSingleUser(at: indexPath.row)
+        cell?.configureCell(with: currentUser)
         cell?.selectionStyle = .none
         return cell ?? BoardCell()
     }

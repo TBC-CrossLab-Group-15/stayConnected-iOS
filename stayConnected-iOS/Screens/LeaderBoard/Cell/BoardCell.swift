@@ -93,9 +93,9 @@ class BoardCell: UITableViewCell {
         ])
     }
     
-    func configureCell(with userScore: String) {
-        nameLabel.text = "Name: \(userScore)"
-        userNameLabel.text = "@\(userScore)"
-        score.text = "Score: \(userScore)"
+    func configureCell(with user: LeaderBoardModel) {
+        nameLabel.text = "Name: \(user.firstName)"
+        userNameLabel.text = "@\(user.lastName)"
+        score.text = "Score: \(user.rating)"
     }
 }

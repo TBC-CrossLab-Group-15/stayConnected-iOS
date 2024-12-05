@@ -9,7 +9,7 @@ import UIKit
 import izziDateFormatter
 
 class DetailVC: UIViewController {
-    private let questionModel: QuestionModel
+    private var questionModel: QuestionModel
     private let izziDateFormatter: IzziDateFormatterProtocol
     private let viewModel: DetailViewModel
     
@@ -76,6 +76,14 @@ class DetailVC: UIViewController {
         view.backgroundColor = .white
         inputAnswer.translatesAutoresizingMaskIntoConstraints = false
         
+        Task {
+            do {
+                questionModel = try await viewModel.getSinglePost(with: 34)
+            } catch {
+                
+            }
+        }
+        
         view.addSubview(backButton)
         view.addSubview(topicTitle)
         view.addSubview(postTitle)
@@ -91,7 +99,7 @@ class DetailVC: UIViewController {
             let inputValue = inputAnswer.value()
             let api = "https://stayconnected.lol/api/posts/answers/"
             
-            viewModel.sendAnswer(api: api, answer: inputValue, postID: self.questionModel.id)
+            viewModel.collectAnswerInfo(api: api, answer: inputValue, postID: self.questionModel.id)
         }
     }
     
