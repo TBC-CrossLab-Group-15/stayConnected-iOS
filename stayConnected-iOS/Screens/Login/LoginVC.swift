@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LoginVC: UIViewController, LoginNavigationDelegate {
+class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
     private let viewModel: LoginViewModel
     private let isSmallScreen = UIScreen.main.bounds.height < 800 ? true : false
     private lazy var spacerOne: UIView = {
@@ -148,7 +148,8 @@ class LoginVC: UIViewController, LoginNavigationDelegate {
     private func setupUI() {
         view.backgroundColor = .white
         viewModel.delegate = self
-        
+        viewModel.errorDelebate = self
+
         view.addSubview(screenTitle)
         view.addSubview(userNameInput)
         view.addSubview(pwdStack)
@@ -236,6 +237,10 @@ class LoginVC: UIViewController, LoginNavigationDelegate {
     func navigateToFeed() {
         let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
         sceneDelegate?.window?.rootViewController = TabBarController()
+    }
+    
+    func didLoginFailed() {
+        errorModal(text: "Invalid username or password")
     }
 }
 
