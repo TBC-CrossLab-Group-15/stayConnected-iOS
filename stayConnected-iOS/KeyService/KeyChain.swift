@@ -25,6 +25,14 @@ final class KeychainService: TokenRetrieveProtocol {
         try keyService.set(refresh, forKey: "refreshToken")
     }
     
+    func storeUserID(userID: String) throws {
+        try keyService.set(userID, forKey: "userID")
+    }
+    
+    func retrieveUserID() throws -> String{
+        try keyService.string(forKey: "userID")
+    }
+    
     func storeAccessTokens(access: String) throws {
         try keyService.set(access, forKey: "accessToken")
     }

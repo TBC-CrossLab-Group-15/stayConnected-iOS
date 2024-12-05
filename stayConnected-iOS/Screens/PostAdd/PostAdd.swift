@@ -7,9 +7,8 @@
 
 import UIKit
 
-class PostAdd: UIViewController, UITextFieldDelegate, TagsModelDelegate {
+class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
     private let viewModel: PostAddViewModel
-    private let feedViewModel: FeedViewModel
 
     private let lineOne:UIView = {
         let lineView = UIView()
@@ -57,7 +56,6 @@ class PostAdd: UIViewController, UITextFieldDelegate, TagsModelDelegate {
             color: .primaryViolet,
             fontName: "InterB",
             fontSize: 16
-//            action: closeModal
         )
         return button
     }()
@@ -158,7 +156,6 @@ class PostAdd: UIViewController, UITextFieldDelegate, TagsModelDelegate {
     
     init(viewModel: PostAddViewModel = PostAddViewModel(), feedViewModel: FeedViewModel = FeedViewModel()) {
         self.viewModel = viewModel
-        self.feedViewModel = feedViewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -169,8 +166,7 @@ class PostAdd: UIViewController, UITextFieldDelegate, TagsModelDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
-        self.feedViewModel.tagsDelegate = self
-
+        viewModel.delegate = self
         setupUI()
     }
     
@@ -195,6 +191,9 @@ class PostAdd: UIViewController, UITextFieldDelegate, TagsModelDelegate {
             self?.closeModal()
         }), for: .touchUpInside)
         postInput.translatesAutoresizingMaskIntoConstraints = false
+        postInput.onSendAction = {[weak self] in
+            self?.addPostToDataBase()
+        }
     }
     
     private func setupConstraints() {
@@ -248,8 +247,8 @@ class PostAdd: UIViewController, UITextFieldDelegate, TagsModelDelegate {
             chooseTagCollection.topAnchor.constraint(equalTo: lineThree.topAnchor, constant: 10),
             chooseTagCollection.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
             chooseTagCollection.heightAnchor.constraint(lessThanOrEqualToConstant: 130),
-
-
+            
+            
             postInput.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             postInput.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             postInput.topAnchor.constraint(equalTo: chooseTagCollection.bottomAnchor, constant: 10),
@@ -257,15 +256,18 @@ class PostAdd: UIViewController, UITextFieldDelegate, TagsModelDelegate {
         ])
     }
     
-    private func closeModal() {
-        dismiss(animated: true, completion: nil)
+    func closeModal() {
+        dismiss(animated: true , completion: nil )
     }
     
     private func addPostToDataBase() {
-//        viewModel.postQuestion(subject: subjectInput.text ?? "", question: postInput.text ?? "")
+        let subjectValue = subjectInput.text
+        let questionValue = postInput.value()
+        
+        viewModel.postedPost(api: "https://stayconnected.lol/api/posts/questions/", subject: subjectValue ?? "", question: questionValue)
     }
     
-    func didTagsFetched() {
+    func didTagsRefreshed() {
         chooseTagCollection.reloadData()
     }
 }

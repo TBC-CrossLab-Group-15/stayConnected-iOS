@@ -68,9 +68,9 @@ final class WinnersView: UIView {
     private lazy var userNameLabel: UILabel = {
         let label = UILabel()
         label.configureCustomText(
-            text: userName,
+            text: "@\(userName)",
             color: .white,
-            size: 8,
+            size: 10,
             weight: .bold
         )
         return label
@@ -119,8 +119,8 @@ final class WinnersView: UIView {
             avatarImage.heightAnchor.constraint(equalToConstant: 60),
         ])
         
-        guard let urlImage = URL(string: imageUrl) else {return}
-        avatarImage.imageFrom(url: urlImage)
+        avatarImage.image = UIImage(named: imageUrl)
+        avatarImage.backgroundColor = colorForBorder
     }
     
 }

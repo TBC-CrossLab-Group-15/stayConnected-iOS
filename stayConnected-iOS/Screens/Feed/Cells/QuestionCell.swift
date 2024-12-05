@@ -123,7 +123,7 @@ final class QuestionCell: UITableViewCell {
         tagsArray = question.tags
 
         questionTitle.configureCustomText(
-            text: question.title,
+            text: "\(question.user.firstName) \(question.user.lastName)",
             color: .primaryGray,
             size: 13,
             weight: .regular,
@@ -133,7 +133,7 @@ final class QuestionCell: UITableViewCell {
         questionLabel.configureCustomText(
             text: question.title,
             color: .black,
-            size: 15,
+            size: 18,
             weight: .regular,
             lineNumber: 1
         )

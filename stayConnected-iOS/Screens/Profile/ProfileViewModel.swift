@@ -102,7 +102,8 @@ final class ProfileViewModel {
     
     
     private func sendAvatarToDb(name: String, headers: [String : String]) async throws {
-        let url = "https://stayconnected.lol/api/user/profile/3/"
+        let userID = try keyService.retrieveUserID()
+        let url = "https://stayconnected.lol/api/user/profile/\(userID)/"
         let body = AvatarReqBodyModel(avatarId: name )
         print(body)
         Task {
@@ -125,7 +126,6 @@ final class ProfileViewModel {
                 
                 let headers = ["Authorization": "Bearer \(token)"]
                 try await sendAvatarToDb(name: name, headers: headers)
-                print(headers)
             } catch {
                 if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
                     print("⚠️ Token expired, attempting to renew...")

@@ -32,13 +32,11 @@ final class LoginViewModel {
                 let response: LoginResponse = try await postService.postData(urlString: url, headers: nil, body: body)
         
                 try keyService.storeTokens(access: response.access, refresh: response.refresh)
-                print("🔴")
-                print(response)
+                try keyService.storeUserID(userID: String(response.userID))
+                print(response.access)
                 DispatchQueue.main.async {[weak self] in
                     self?.delegate?.navigateToFeed()
                 }
-                
-                print("‼️ refreshToken: \(response.refresh)")
             } catch {
                 print("Error: \(error)")
             }

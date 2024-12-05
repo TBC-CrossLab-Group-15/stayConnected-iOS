@@ -170,7 +170,7 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     private lazy var answeredQLabel: UILabel = {
         let label = UILabel()
         label.configureCustomText(
-            text: "Answered Questions",
+            text: "Answeres",
             color: .primaryGray,
             size: 17,
             weight: .bold
@@ -266,9 +266,6 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         let tapGestureAvatar = UITapGestureRecognizer(target: self, action: #selector(chooseAvatars))
         avatarImage.addGestureRecognizer(tapGestureAvatar)
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapMyanswers))
-        secondStack.addGestureRecognizer(tapGesture)
-        
         let tapGestureL = UITapGestureRecognizer(target: self, action: #selector(logOut))
         thirdStack.addGestureRecognizer(tapGestureL)
         
@@ -329,12 +326,7 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         ])
     }
     
-    @objc func tapMyanswers() {
-        print("my answers tapped")
-    }
-    
     @objc func logOut() throws {
-        print("Log out initiated")
         try keychainService.removeTokens()
         
         if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {

@@ -57,18 +57,11 @@ final class SignUpViewModel {
         )
         Task {
             do {
-                // Ensure the headers are correctly set
                 let headers = [
                     "Content-Type": "application/json"
                 ]
-                
-                // Send the POST request and decode the response
-                let response: UserRegistrationModel = try await postService.postData(urlString: url, headers: headers, body: body)
-                
-                // Print the response to verify success
-                print("Response: \(response)")
+                let _: UserRegistrationModel = try await postService.postData(urlString: url, headers: headers, body: body)
             } catch {
-                // Print detailed error information for debugging
                 if let urlError = error as? URLError {
                     print("URLError: \(urlError)")
                 } else if let decodingError = error as? DecodingError {
@@ -78,8 +71,5 @@ final class SignUpViewModel {
                 }
             }
         }
-
-        
-       
     }
 }

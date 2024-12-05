@@ -7,10 +7,10 @@
 
 import UIKit
 
-final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate {
+final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, SearchedInfoDelegate {
     private let viewModel: FeedViewModel
     private let keyService: KeychainService
-    
+        
     private let spacerOne: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -109,6 +109,9 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate {
         field.leftView = leftIconContainer
         field.leftViewMode = .always
         
+        field.addAction(UIAction(handler: {[weak self] _ in
+            self?.viewModel.searchByTitle(with: field.text ?? "")
+        }), for: .editingChanged)
         return field
     }()
     
@@ -198,19 +201,22 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         noQstack.isHidden = viewModel.questionsCount > 0 ? true : false
+        viewModel.updatePages()
+        questionsTable.reloadData()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
-
+        
         viewModel.delegate = self
         viewModel.tagsDelegate = self
-    
+        viewModel.searchedInfoDelegate = self
         setupUI()
     }
     
     private func setupUI() {
+        
         view.backgroundColor = .white
         
         view.addSubview(topStack)
@@ -276,11 +282,19 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate {
         noQstack.isHidden = viewModel.questionsCount > 0 ? true : false
         questionsTable.isHidden = viewModel.questionsCount > 0 ? false : true
         questionsTable.reloadData()
+        print("reloaded 🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢")
     }
+    
+    
     
     func didTagsFetched() {
         tagCollection.reloadData()
-        print("donwlaoded tags")
+    }
+    
+    func didSearchedInfoFetched() {
+        noQstack.isHidden = viewModel.questionsCount > 0 ? true : false
+        questionsTable.isHidden = viewModel.questionsCount > 0 ? false : true
+        questionsTable.reloadData()
     }
     
     private func addPost() {
@@ -300,13 +314,13 @@ extension FeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
         
         let currentTag = viewModel.singleTag(whit: indexPath.row)
         cell?.configureCell(with: currentTag)
-        
         return cell ?? TagCell()
     }
     
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let currentTagName = viewModel.singleTag(whit: indexPath.row).name
-        viewModel.fetchDataWithTag(with: currentTagName)
+        viewModel.searchByTag(with: currentTagName)
+        print(currentTagName)
     }
 }
 
@@ -321,12 +335,17 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
         cell?.selectionStyle = .none
         let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
         cell?.configureCell(with: currentQuestion)
-    
+        
+        if indexPath.row == viewModel.questionsCount - 1 {
+            viewModel.updatePages()
+        }
+        
         return cell ?? QuestionCell()
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
+        print(currentQuestion.id)
         let vc  = DetailVC(questionModel: currentQuestion)
         vc.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(vc, animated: true)
