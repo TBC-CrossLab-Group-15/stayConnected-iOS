@@ -9,7 +9,7 @@ import UIKit
 
 final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
     private let viewModel: LeaderBoardViewModel
-        
+    
     private lazy var screenTitle: UILabel = {
         let label = UILabel()
         label.configureCustomText(
@@ -60,33 +60,6 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
         return view
     }()
     
-    private let secondPlace = WinnersView(
-        colorForBorder: .primaryGray,
-        imageUrl: "https://picsum.photos/200",
-        positionIcon: "secondPlaceIcon",
-        firstName: "leon",
-        score: 34,
-        userName: "johnatn"
-    )
-    
-    private let firstPlace = WinnersView(
-        colorForBorder: .firsPlaceBorder,
-        imageUrl: "",
-        positionIcon: "",
-        firstName: "",
-        score: 0,
-        userName: ""
-    )
-    
-    private let thirdPlace = WinnersView(
-        colorForBorder: .thirdPlaceBorder,
-        imageUrl: "https://picsum.photos/200",
-        positionIcon: "thirdPlaceIcon",
-        firstName: "leon",
-        score: 34,
-        userName: "johnatn"
-    )
-    
     init(
         viewModel: LeaderBoardViewModel = LeaderBoardViewModel()
     ) {
@@ -101,7 +74,7 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
-
+        
         setupUI()
     }
     
@@ -116,15 +89,6 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
         view.addSubview(boardView)
         boardView.addSubview(leadBoardTabel)
         
-        secondPlace.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(secondPlace)
-        
-        firstPlace.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(firstPlace)
-        
-        thirdPlace.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(thirdPlace)
-        
         setupConstraints()
     }
     
@@ -132,15 +96,6 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
         NSLayoutConstraint.activate([
             screenTitle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
             screenTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
-            
-            secondPlace.leadingAnchor.constraint(equalTo: horizonatlView.leadingAnchor, constant: 20),
-            secondPlace.bottomAnchor.constraint(equalTo: horizonatlView.bottomAnchor, constant: -10),
-            
-            firstPlace.centerXAnchor.constraint(equalTo: verticalView.centerXAnchor),
-            firstPlace.bottomAnchor.constraint(equalTo: horizonatlView.bottomAnchor, constant: -40),
-            
-            thirdPlace.trailingAnchor.constraint(equalTo: horizonatlView.trailingAnchor, constant: -20),
-            thirdPlace.bottomAnchor.constraint(equalTo: horizonatlView.bottomAnchor, constant: -10),
             
             horizonatlView.heightAnchor.constraint(equalToConstant: 120),
             horizonatlView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 38),
@@ -166,20 +121,56 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
     
     func didBoardFetched() {
         self.leadBoardTabel.reloadData()
-
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            let firstUser = self.viewModel.getSingleUser(at: 1)
-            print("🦧")
-            self.firstPlace.firstName = firstUser.firstName
-            self.firstPlace.userName = firstUser.lastName
-            self.firstPlace.score = firstUser.rating
-
-            self.firstPlace.setNeedsDisplay()
-            self.firstPlace.layoutIfNeeded()
-        }
+        
+        guard viewModel.leaderBoardArray.count >= 3 else { return }
+        let board = viewModel.leaderBoardArray
+        
+        let firstPlace = WinnersView(
+            colorForBorder: .firsPlaceBorder,
+            imageUrl: board[0].avatar ?? "testUser",
+            positionIcon: "1",
+            firstName: board[0].firstName,
+            score: board[0].rating,
+            userName: board[0].lastName
+        )
+        
+        let secondPlace = WinnersView(
+            colorForBorder: .primaryGray,
+            imageUrl: board[1].avatar ?? "testUser",
+            positionIcon: "secondPlaceIcon",
+            firstName: board[1].firstName,
+            score: board[1].rating,
+            userName: board[1].lastName
+        )
+        
+        let thirdPlace = WinnersView(
+            colorForBorder: .primaryGray,
+            imageUrl: board[2].avatar ?? "testUser",
+            positionIcon: "secondPlaceIcon",
+            firstName: board[2].firstName,
+            score: board[2].rating,
+            userName: board[2].lastName
+        )
+        
+        view.addSubview(firstPlace)
+        view.addSubview(secondPlace)
+        view.addSubview(thirdPlace)
+        
+        firstPlace.translatesAutoresizingMaskIntoConstraints = false
+        secondPlace.translatesAutoresizingMaskIntoConstraints = false
+        thirdPlace.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            secondPlace.leadingAnchor.constraint(equalTo: horizonatlView.leadingAnchor, constant: 20),
+            secondPlace.bottomAnchor.constraint(equalTo: horizonatlView.bottomAnchor, constant: -20),
+            
+            firstPlace.centerXAnchor.constraint(equalTo: verticalView.centerXAnchor),
+            firstPlace.bottomAnchor.constraint(equalTo: horizonatlView.bottomAnchor, constant: -70),
+            
+            thirdPlace.trailingAnchor.constraint(equalTo: horizonatlView.trailingAnchor, constant: -20),
+            thirdPlace.bottomAnchor.constraint(equalTo: horizonatlView.bottomAnchor, constant: -20)
+        ])
     }
-
 }
 
 extension LeaderBoardVC: UITableViewDelegate, UITableViewDataSource {
@@ -196,5 +187,5 @@ extension LeaderBoardVC: UITableViewDelegate, UITableViewDataSource {
         return cell ?? BoardCell()
     }
     
-   
+    
 }

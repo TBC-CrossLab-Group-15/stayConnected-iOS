@@ -27,6 +27,7 @@ class BoardCell: UITableViewCell {
         stack.axis = .horizontal
         stack.distribution = .fill
         stack.alignment = .center
+        stack.spacing = 5
         stack.clipsToBounds = true
         stack.isLayoutMarginsRelativeArrangement = true
         stack.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
@@ -38,8 +39,15 @@ class BoardCell: UITableViewCell {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .vertical
-        stack.spacing = 10
+        stack.spacing = 1
         return stack
+    }()
+    
+    private lazy var userAvatar: UIImageView = {
+        let image = UIImageView()
+        image.translatesAutoresizingMaskIntoConstraints = false
+        
+        return image
     }()
     
     private lazy var nameLabel: UILabel = {
@@ -69,6 +77,7 @@ class BoardCell: UITableViewCell {
     
     private func setupUI() {
         contentView.addSubview(mainStack)
+        mainStack.addArrangedSubview(userAvatar)
         mainStack.addArrangedSubview(leftStack)
         leftStack.addArrangedSubview(nameLabel)
         leftStack.addArrangedSubview(userNameLabel)
@@ -81,6 +90,9 @@ class BoardCell: UITableViewCell {
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
+            userAvatar.widthAnchor.constraint(equalToConstant: 50),
+            userAvatar.heightAnchor.constraint(equalToConstant: 50),
+            
             mainStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
             mainStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
             mainStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
@@ -97,5 +109,6 @@ class BoardCell: UITableViewCell {
         nameLabel.text = "Name: \(user.firstName)"
         userNameLabel.text = "@\(user.lastName)"
         score.text = "Score: \(user.rating)"
+        userAvatar.image = UIImage(named: user.avatar ?? "testUser")
     }
 }
