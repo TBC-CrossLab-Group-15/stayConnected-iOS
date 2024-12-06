@@ -100,7 +100,7 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
     
     private func setupUI() {
         viewModel.delegate = self
-        viewModel.getSinglePost(with: questionModel.id)
+        viewModel.refetchCurrentPostAnswers(with: questionModel.id)
         view.backgroundColor = .white
         inputAnswer.translatesAutoresizingMaskIntoConstraints = false
         
@@ -118,9 +118,13 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
             guard let self = self else { return }
             let inputValue = inputAnswer.value()
             
+            guard inputValue.count > 0 else {
+                return showAlert(title: "Hold On a Sec…", message: "Enter your comment", buttonTitle: "Try Again")
+            }
+            
             let api = "https://stayconnected.lol/api/posts/answers/"
             viewModel.collectAnswerInfo(api: api, answer: inputValue, postID: self.questionModel.id)
-            viewModel.getSinglePost(with: questionModel.id)
+            viewModel.refetchCurrentPostAnswers(with: questionModel.id)
             inputAnswer.clearInput()
         }
     }
@@ -196,7 +200,7 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
     
     func didAnswersFetched() {
         commentsTable.reloadData()
-        
+        print("🔴")
         if viewModel.answersArray.count == 0 {
             commentsTable.isHidden = true
             noCommentsImage.isHidden = false
@@ -229,6 +233,17 @@ extension DetailVC: UITableViewDelegate, UITableViewDataSource {
         }
         
         let currentAnswer = viewModel.singleAnswer(at: indexPath.row)
+        let currentQuestionID = questionModel.id
+        
+        if currentAnswer.user.id == Int(myID) {
+            let deleteAnswer = UIContextualAction(style: .normal, title: "Delete") {[weak self] action, view, completionHandler in
+                print(currentAnswer)
+                self?.deletionHandler(with: currentAnswer.id, and: currentQuestionID)
+                completionHandler(true)
+            }
+            deleteAnswer.backgroundColor = .systemRed
+            return UISwipeActionsConfiguration(actions: [deleteAnswer])
+        }
         
         guard questionModel.user.id == Int(myID) else {
             return UISwipeActionsConfiguration()
@@ -257,9 +272,11 @@ extension DetailVC: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    
     private func actionHandler(at index: Int) {
-        print("Accepted user: \(index)")
         viewModel.checkAnswer(at: index, postID: questionModel.id)
+    }
+    
+    private func deletionHandler(with index: Int, and postID: Int) {
+        viewModel.deleteComment(with: index, and: postID)
     }
 }

@@ -187,12 +187,6 @@ class SignUpVC: UIViewController {
         ])
     }
     
-    private func errorModal(text: String) {
-        let alert = UIAlertController(title: "Error", message: text, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Try Again", style: .default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
-    }
-    
     private func signupAction() {
         let nameValue = name.value()
         let surnameValue = surnName.value()
@@ -209,35 +203,35 @@ class SignUpVC: UIViewController {
         )
         
         guard nameValue.count >= 2 else {
-            return errorModal(text: "Name must be at least 2 characters.")
+            return showAlert(title: "Let’s Fix This", message: "Name must be at least 2 characters.", buttonTitle: "Try Again")
         }
         
         guard isEnglishChars else {
-            return errorModal(text: "Use only English letters.")
+            return showAlert(title: "Let’s Fix This", message: "Use only English letters.", buttonTitle: "Try Again")
         }
         
         guard surnameValue.count >= 2 else {
-            return errorModal(text: "Last name must be at least 2 characters.")
+            return showAlert(title: "Let’s Fix This", message: "Last name must be at least 2 characters.", buttonTitle: "Try Again")
         }
         
         guard isEnglishCharsSurname else {
-            return errorModal(text: "Use only English letters.")
+            return showAlert(title: "Let’s Fix This", message: "Use only English letters.", buttonTitle: "Try Again")
         }
         
         guard isCorrectEmail else {
-            return errorModal(text: "Please enter a valid email address.")
+            return showAlert(title: "Let’s Fix This", message: "Please enter a valid email address.", buttonTitle: "Try Again")
         }
         
         guard pwdValue.count >= 8 else {
-            return errorModal(text: "Password must be at least 8 characters.")
+            return showAlert(title: "Let’s Fix This", message: "Password must be at least 8 characters.", buttonTitle: "Try Again")
         }
         
         guard isStrongPassword else {
-            return errorModal(text: "The password must contain at least one uppercase letter, a number, and a symbol.")
+            return showAlert(title: "Let’s Fix This", message: "The password must contain at least one uppercase letter, a number, and a symbol.", buttonTitle: "Try Again")
         }
         
         guard isPasswordsEqual else {
-            return errorModal(text: "Passwords do not match.")
+            return showAlert(title: "Let’s Fix This", message: "Passwords do not match.", buttonTitle: "Try Again")
         }
         
         viewModel.signUpAction(

@@ -59,6 +59,7 @@ final class TokenNetwork {
             _ = try await retryFunction(api, headers)
         } catch let caughtError {
             print("❌ Token renewal failed: \(caughtError.localizedDescription)")
+            print("⚠️🤌🏿")
             if case NetworkError.statusCodeError(let statusCode) = caughtError {
                 print("❌ Unexpected status code during retry: \(statusCode)")
             } else {

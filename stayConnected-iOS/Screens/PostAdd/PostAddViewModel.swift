@@ -105,6 +105,9 @@ final class PostAddViewModel {
                 } else {
                     print("❌ Failed to post question: \(error.localizedDescription)")
                     handleNetworkError(error)
+                    DispatchQueue.main.async {[weak self] in
+                        self?.postingFailure?.didPostingFailed()
+                    }
                 }
             }
         }
@@ -123,9 +126,6 @@ final class PostAddViewModel {
         } catch {
             print("Error: \(error)")
             errorMessage = error.localizedDescription
-            DispatchQueue.main.async {[weak self] in
-                self?.postingFailure?.didPostingFailed()
-            }
             throw error
         }
     }

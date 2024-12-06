@@ -270,12 +270,6 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
         ])
     }
     
-    private func alertBox(title: String ,text: String, button: String) {
-        let alert = UIAlertController(title: title, message: text, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: button, style: .default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
-    }
-    
     func closeModal() {
         dismiss(animated: true , completion: nil )
     }
@@ -285,7 +279,7 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
         let questionValue = postInput.value()
         
         guard subjectValue?.count ?? 0 > 0, questionValue.count > 0 else {
-            return alertBox(title: "Error", text: "Fill all Fields", button: "Try Again")
+            return showAlert(title: "Let’s Fix This", message: "ill all fields", buttonTitle: "Try Again")
         }
         
         viewModel.postedPost(api: "https://stayconnected.lol/api/posts/questions/", subject: subjectValue ?? "", question: questionValue)
@@ -296,14 +290,15 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
     }
     
     func didPostAddedSuccssfully() {
-        alertBox(title: "Well, That Was Easy!", text: "Question added successfully", button: "Ask one more?")
+        showAlert(title: "Well, That Was Easy!", message: "Question added successfully", buttonTitle: "Ask one more?")
         subjectInput.text = ""
         postInput.clearInput()
     }
     
     func didPostingFailed() {
         let error = viewModel.errorMessage
-        alertBox(title: "Oh No!", text: error, button: "Try Again")
+        showAlert(title: "Oh No!", message: error, buttonTitle: "Try Again")
+
     }
 }
 

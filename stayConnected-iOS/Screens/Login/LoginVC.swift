@@ -210,11 +210,11 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
         let passwordValue = passwordField.value()
         
         guard !userNameValue.isEmpty else {
-            return errorModal(text: "enter username")
+            return showAlert(title: "Let’s Fix This", message: "Enter username", buttonTitle: "Try Again")
         }
         
         guard !passwordValue.isEmpty else {
-            return errorModal(text: "enter password")
+            return showAlert(title: "Let’s Fix This", message: "Enter password", buttonTitle: "Try Again")
         }
         
         viewModel.loginAction(email: userNameValue, password: passwordValue)
@@ -228,19 +228,13 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
         navigationController?.pushViewController(SignUpVC(), animated: true)
     }
     
-    private func errorModal(text: String) {
-        let alert = UIAlertController(title: "Error", message: text, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Try Again", style: .default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
-    }
-    
     func navigateToFeed() {
         let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
         sceneDelegate?.window?.rootViewController = TabBarController()
     }
     
     func didLoginFailed() {
-        errorModal(text: "Invalid username or password")
+        showAlert(title: "Let’s Fix This", message: "Invalid username or password", buttonTitle: "Try Again")
     }
 }
 
