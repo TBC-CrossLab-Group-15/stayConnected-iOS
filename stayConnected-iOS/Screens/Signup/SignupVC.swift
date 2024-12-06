@@ -119,7 +119,7 @@ class SignUpVC: UIViewController {
         email.translatesAutoresizingMaskIntoConstraints = false
         newPassword.translatesAutoresizingMaskIntoConstraints = false
         confirmPassword.translatesAutoresizingMaskIntoConstraints = false
-    
+        
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(backButton)
@@ -155,7 +155,7 @@ class SignUpVC: UIViewController {
             backButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             backButton.widthAnchor.constraint(equalToConstant: 24),
             backButton.heightAnchor.constraint(equalToConstant: 24),
-
+            
             screenTitle.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: 12),
             screenTitle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 18),
             
@@ -186,12 +186,12 @@ class SignUpVC: UIViewController {
             signUpButton.heightAnchor.constraint(equalToConstant: 59)
         ])
     }
-
+    
     private func errorModal(text: String) {
-            let alert = UIAlertController(title: "Error", message: text, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Try Again", style: .default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
-        }
+        let alert = UIAlertController(title: "Error", message: text, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Try Again", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
     
     private func signupAction() {
         let nameValue = name.value()
@@ -208,38 +208,38 @@ class SignUpVC: UIViewController {
             pwdTwo: confirmPassword.value()
         )
         
-        guard nameValue.count >= 3 else {
-            return errorModal(text: "name must be more than 3")
+        guard nameValue.count >= 2 else {
+            return errorModal(text: "Name must be at least 2 characters.")
         }
         
         guard isEnglishChars else {
-            return errorModal(text: "Enter name with english")
+            return errorModal(text: "Use only English letters.")
         }
         
-        guard surnameValue.count >= 3 else {
-            return errorModal(text: "surname must be more than 3")
+        guard surnameValue.count >= 2 else {
+            return errorModal(text: "Last name must be at least 2 characters.")
         }
         
         guard isEnglishCharsSurname else {
-            return errorModal(text: "Enter surname with english")
+            return errorModal(text: "Use only English letters.")
         }
-
+        
         guard isCorrectEmail else {
-            return errorModal(text: "not email")
+            return errorModal(text: "Please enter a valid email address.")
         }
         
         guard pwdValue.count >= 8 else {
-            return errorModal(text: "password must be at last 8")
+            return errorModal(text: "Password must be at least 8 characters.")
         }
         
         guard isStrongPassword else {
-            return errorModal(text: "password is weak")
+            return errorModal(text: "The password must contain at least one uppercase letter, a number, and a symbol.")
         }
         
         guard isPasswordsEqual else {
-            return errorModal(text: "Passwords not equal")
+            return errorModal(text: "Passwords do not match.")
         }
-    
+        
         viewModel.signUpAction(
             firstName: nameValue,
             lastName: surnameValue,

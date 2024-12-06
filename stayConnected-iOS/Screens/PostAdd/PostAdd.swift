@@ -11,7 +11,7 @@ protocol PresentedVCDelegate: AnyObject {
     func didDismissPresentedVC()
 }
 
-class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
+class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPostedSuccessfully, DidPostingFailed {
     weak var delegate: PresentedVCDelegate?
     private let viewModel: PostAddViewModel
     
@@ -172,6 +172,8 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
         viewModel.delegate = self
+        viewModel.successDelegate = self
+        viewModel.postingFailure = self
         setupUI()
     }
     
@@ -268,6 +270,12 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
         ])
     }
     
+    private func alertBox(title: String ,text: String, button: String) {
+        let alert = UIAlertController(title: title, message: text, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: button, style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
     func closeModal() {
         dismiss(animated: true , completion: nil )
     }
@@ -276,11 +284,26 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
         let subjectValue = subjectInput.text
         let questionValue = postInput.value()
         
+        guard subjectValue?.count ?? 0 > 0, questionValue.count > 0 else {
+            return alertBox(title: "Error", text: "Fill all Fields", button: "Try Again")
+        }
+        
         viewModel.postedPost(api: "https://stayconnected.lol/api/posts/questions/", subject: subjectValue ?? "", question: questionValue)
     }
     
     func didTagsRefreshed() {
         chooseTagCollection.reloadData()
+    }
+    
+    func didPostAddedSuccssfully() {
+        alertBox(title: "Well, That Was Easy!", text: "Question added successfully", button: "Ask one more?")
+        subjectInput.text = ""
+        postInput.clearInput()
+    }
+    
+    func didPostingFailed() {
+        let error = viewModel.errorMessage
+        alertBox(title: "Oh No!", text: error, button: "Try Again")
     }
 }
 

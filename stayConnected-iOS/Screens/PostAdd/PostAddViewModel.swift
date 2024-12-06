@@ -11,6 +11,13 @@ import Foundation
 protocol DidTagsRefreshed: AnyObject {
     func didTagsRefreshed()
 }
+protocol DidPostedSuccessfully: AnyObject {
+    func didPostAddedSuccssfully()
+}
+
+protocol DidPostingFailed: AnyObject {
+    func didPostingFailed()
+}
 
 final class PostAddViewModel {
     private let webService: NetworkServiceProtocol
@@ -18,9 +25,12 @@ final class PostAddViewModel {
     private let tokenNetwork: TokenNetwork
     private let postService: PostServiceProtocol
     weak var delegate: DidTagsRefreshed?
+    weak var successDelegate: DidPostedSuccessfully?
+    weak var postingFailure: DidPostingFailed?
     var feedViewModel: FeedViewModel
     var activeTags: [Tag] = []
     var inactiveTags: [Tag] = []
+    var errorMessage = ""
     
     init(
         webService: NetworkServiceProtocol = NetworkService(),
@@ -107,8 +117,15 @@ final class PostAddViewModel {
         
         do {
             let _ : PostModelResponse = try await postService.postData(urlString: api, headers: headers, body: body)
+            DispatchQueue.main.async {[weak self] in
+                self?.successDelegate?.didPostAddedSuccssfully()
+            }
         } catch {
             print("Error: \(error)")
+            errorMessage = error.localizedDescription
+            DispatchQueue.main.async {[weak self] in
+                self?.postingFailure?.didPostingFailed()
+            }
             throw error
         }
     }
