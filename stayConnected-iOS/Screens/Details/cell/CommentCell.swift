@@ -136,7 +136,12 @@ class CommentCell: UITableViewCell {
         
         avatarImage.image = UIImage(named: "\(answer.user.avatar ?? "testUser")")
         
-        let date = izziDateFormatter.formatDate(currentFormat: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", currentDate: answer.createDate, format: "EEEE, d MMM yyyy")
+        let date = izziDateFormatter.isoTimeFormatter(
+            currentDate: answer.createDate,
+            finalFormat: "EEEE, d MMM yyyy",
+            timeZoneOffset: 4
+        )
+        
         commentDate.configureCustomText(
             text: date,
             color: .black,

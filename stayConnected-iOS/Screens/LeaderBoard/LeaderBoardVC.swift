@@ -128,7 +128,7 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
         let firstPlace = WinnersView(
             colorForBorder: .firsPlaceBorder,
             imageUrl: board[0].avatar ?? "testUser",
-            positionIcon: "1",
+            positionIcon: "firsPositionIcon",
             firstName: board[0].firstName,
             score: board[0].rating,
             userName: board[0].lastName
@@ -146,7 +146,7 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
         let thirdPlace = WinnersView(
             colorForBorder: .primaryGray,
             imageUrl: board[2].avatar ?? "testUser",
-            positionIcon: "secondPlaceIcon",
+            positionIcon: "thirdPlaceIcon",
             firstName: board[2].firstName,
             score: board[2].rating,
             userName: board[2].lastName
@@ -165,7 +165,7 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
             secondPlace.bottomAnchor.constraint(equalTo: horizonatlView.bottomAnchor, constant: -20),
             
             firstPlace.centerXAnchor.constraint(equalTo: verticalView.centerXAnchor),
-            firstPlace.bottomAnchor.constraint(equalTo: horizonatlView.bottomAnchor, constant: -70),
+            firstPlace.bottomAnchor.constraint(equalTo: horizonatlView.bottomAnchor, constant: -50),
             
             thirdPlace.trailingAnchor.constraint(equalTo: horizonatlView.trailingAnchor, constant: -20),
             thirdPlace.bottomAnchor.constraint(equalTo: horizonatlView.bottomAnchor, constant: -20)

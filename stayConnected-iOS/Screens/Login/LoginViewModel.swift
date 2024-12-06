@@ -12,10 +12,15 @@ protocol LoginNavigationDelegate: AnyObject {
     func navigateToFeed()
 }
 
+protocol LoginErrorDelegate: AnyObject {
+    func didLoginFailed()
+}
+
 final class LoginViewModel {
     private let postService: PostServiceProtocol
     private let keyService: KeychainService
     weak var delegate: LoginNavigationDelegate?
+    weak var errorDelebate: LoginErrorDelegate?
     
     init(postService: PostServiceProtocol = PostService(), keyService: KeychainService = KeychainService()) {
         self.keyService = keyService
@@ -38,6 +43,9 @@ final class LoginViewModel {
                     self?.delegate?.navigateToFeed()
                 }
             } catch {
+                DispatchQueue.main.async {[weak self] in
+                    self?.errorDelebate?.didLoginFailed()
+                }
                 print("Error: \(error)")
             }
         }

@@ -94,7 +94,7 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print(questionModel.createDate)
         setupUI()
     }
     
@@ -173,10 +173,19 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
             size: 20,
             weight: .regular
         )
-        let date = izziDateFormatter.formatDate(currentFormat: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", currentDate: questionModel.createDate, format: "dd/MM/yyyy")
         
-        let time = izziDateFormatter.formatDate(currentFormat: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", currentDate: questionModel.createDate, format: "HH:mm")
+        let date = izziDateFormatter.isoTimeFormatter(
+            currentDate: questionModel.createDate,
+            finalFormat: "dd/MM/yyyy",
+            timeZoneOffset: 4
+        )
         
+        let time = izziDateFormatter.isoTimeFormatter(
+            currentDate: questionModel.createDate,
+            finalFormat: "HH:mm",
+            timeZoneOffset: 4
+        )
+
         askedDate.configureCustomText(
             text: "\(questionModel.user.firstName) asked \(date) at \(time)",
             color: .primaryGray,
@@ -187,7 +196,6 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
     
     func didAnswersFetched() {
         commentsTable.reloadData()
-        print("⚠️")
         
         if viewModel.answersArray.count == 0 {
             commentsTable.isHidden = true
