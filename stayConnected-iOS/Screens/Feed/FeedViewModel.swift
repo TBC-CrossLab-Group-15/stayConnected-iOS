@@ -212,6 +212,8 @@ final class FeedViewModel {
                     let _: () = try await deletionService.deleteData(urlString: api, headers: headers)
                     if isPersonalData {
                         currentUserQuestions()
+                    } else {
+                        updatePages()
                     }
                 } catch {
                     if case NetworkError.statusCodeError(statusCode: let statusCode) = error, statusCode == 401 {
@@ -220,6 +222,11 @@ final class FeedViewModel {
                         headers = ["Authorization": "Bearer \(token)"]
                         
                         let _: () = try await deletionService.deleteData(urlString: api, headers: headers)
+                        if isPersonalData {
+                            currentUserQuestions()
+                        } else {
+                            updatePages()
+                        }
                     }
                 }
             }catch {
