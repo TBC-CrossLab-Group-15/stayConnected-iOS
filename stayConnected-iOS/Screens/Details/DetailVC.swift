@@ -14,6 +14,18 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
     private let viewModel: DetailViewModel
     private let keyService: KeychainService
     
+    private let scrollView: UIScrollView = {
+        let scroll = UIScrollView()
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        return scroll
+    }()
+    
+    private lazy var contentView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     private lazy var backButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -114,12 +126,14 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
         inputAnswer.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(backButton)
-        view.addSubview(topicTitle)
-        view.addSubview(postTitle)
-        view.addSubview(showMoreButton)
-        view.addSubview(askedDate)
-        view.addSubview(commentsTable)
-        view.addSubview(inputAnswer)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubview(topicTitle)
+        contentView.addSubview(postTitle)
+        contentView.addSubview(showMoreButton)
+        contentView.addSubview(askedDate)
+        contentView.addSubview(commentsTable)
+        contentView.addSubview(inputAnswer)
         
         setupConstraints()
         configureView()
@@ -146,36 +160,48 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
             backButton.widthAnchor.constraint(equalToConstant: 24),
             backButton.heightAnchor.constraint(equalToConstant: 24),
             
-            topicTitle.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: 12),
-            topicTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            scrollView.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: 10),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
-            postTitle.topAnchor.constraint(equalTo: topicTitle.bottomAnchor, constant: 4),
-            postTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
-            postTitle.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor), // Match scrollView width
             
-            askedDate.topAnchor.constraint(equalTo: postTitle.bottomAnchor, constant: 4),
-            askedDate.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            topicTitle.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            topicTitle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             
-            showMoreButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            showMoreButton.topAnchor.constraint(equalTo: askedDate.bottomAnchor, constant: 5),
+            postTitle.topAnchor.constraint(equalTo: topicTitle.bottomAnchor, constant: 8),
+            postTitle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+            postTitle.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
             
-            commentsTable.topAnchor.constraint(equalTo: showMoreButton.bottomAnchor, constant: 20),
-            commentsTable.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
-            commentsTable.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
-            commentsTable.bottomAnchor.constraint(equalTo: inputAnswer.topAnchor, constant: -12),
+            askedDate.topAnchor.constraint(equalTo: postTitle.bottomAnchor, constant: 8),
+            askedDate.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             
-            inputAnswer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
-            inputAnswer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
-            inputAnswer.bottomAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            showMoreButton.topAnchor.constraint(equalTo: askedDate.bottomAnchor, constant: 8),
+            showMoreButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
-            noCommentLabel.topAnchor.constraint(equalTo: askedDate.bottomAnchor, constant: 100),
-            noCommentLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            commentsTable.topAnchor.constraint(equalTo: showMoreButton.bottomAnchor, constant: 0),
+            commentsTable.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+            commentsTable.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+            commentsTable.heightAnchor.constraint(equalToConstant: 500),
+            
+            inputAnswer.topAnchor.constraint(equalTo: commentsTable.bottomAnchor, constant: 16),
+            inputAnswer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+            inputAnswer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+            inputAnswer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
+            
+            noCommentLabel.topAnchor.constraint(equalTo: commentsTable.bottomAnchor, constant: 100),
+            noCommentLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
             noCommentsImage.topAnchor.constraint(equalTo: noCommentLabel.bottomAnchor, constant: 10),
-            noCommentsImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            noCommentsImage.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
         ])
     }
-    
+
     private func configureView() {
         var isFullyVisible = false
         
