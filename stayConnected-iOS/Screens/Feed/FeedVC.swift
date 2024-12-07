@@ -209,7 +209,12 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         noQstack.isHidden = viewModel.questionsCount > 0 ? true : false
-        viewModel.updatePages()
+        
+        if viewModel.isPersonalData {
+            viewModel.currentUserQuestions()
+        } else {
+            viewModel.updatePages()
+        }
     }
     
     override func viewDidLoad() {
@@ -298,6 +303,11 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         noQstack.isHidden = viewModel.questionsCount > 0 ? true : false
         questionsTable.isHidden = viewModel.questionsCount > 0 ? false : true
         questionsTable.reloadData()
+        
+        if !viewModel.isPersonalData {
+            buttonGeneral.backgroundColor = .primaryViolet
+            buttonPersonal.backgroundColor = .primaryGray
+        }
     }
     
     private func addPost() {
@@ -306,7 +316,11 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
     }
     
     func didDismissPresentedVC() {
-        viewModel.updatePages()
+        if viewModel.isPersonalData {
+            viewModel.currentUserQuestions()
+        } else {
+            viewModel.updatePages()
+        }
     }
 }
 
@@ -328,6 +342,9 @@ extension FeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let currentTagName = viewModel.singleTag(whit: indexPath.row).name
         viewModel.searchByTag(with: currentTagName)
+        if currentTagName == "All" {
+            searchBar.text = ""
+        }
         print(currentTagName)
     }
 }
@@ -362,7 +379,7 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
         let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
-
+        
         guard let myID = try? keyService.retrieveUserID() else {
             return UISwipeActionsConfiguration()
         }
@@ -371,7 +388,7 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
         guard currentQuestion.user.id == Int(myID) else {
             return UISwipeActionsConfiguration()
         }
-
+        
         let rejectedAnswer = UIContextualAction(style: .destructive, title: "Reject") {[weak self] action, view, completionHandler in
             self?.actionHandler(at: currentQuestion.id)
             completionHandler(true)

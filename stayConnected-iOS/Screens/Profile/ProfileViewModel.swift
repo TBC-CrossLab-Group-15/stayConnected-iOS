@@ -58,7 +58,6 @@ final class ProfileViewModel {
                         try await tokenNetwork.getNewToken()
                         token = try keyService.retrieveAccessToken()
                         headers = ["Authorization": "Bearer \(token)"]
-                        
                         try await fetchProfileData(api: api, headers: headers)
                     } else {
                         throw error

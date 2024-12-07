@@ -28,7 +28,7 @@ final class FeedViewModel {
     private var pageCount = 0
     private var totalCount = 0
     private var isSearching = false
-    private var isPersonalData = false
+    var isPersonalData = false
     private let tagApiLink = "https://stayconnected.lol/api/posts/tags/"
     private let webService: NetworkServiceProtocol
     private let deletionService: DeleteMethodPorotocol
@@ -99,16 +99,20 @@ final class FeedViewModel {
     }
     
     func updatePages() {
+        isPersonalData = false
+        print(isPersonalData)
+        
         guard !isSearching else { return }
         
         pageCount += 10
         let apiLink = "https://stayconnected.lol/api/posts/questions/?page=1&page_size=\(pageCount)"
         fetchData(api: apiLink)
-
+        
         print("count: \(pageCount) : total: \(totalCount)")
     }
     
     func searchByTag(with tag: String) {
+        isPersonalData = false
         
         if tag == "All" {
             isSearching = false
@@ -134,6 +138,7 @@ final class FeedViewModel {
     }
     
     func searchByTitle(with title: String) {
+        isPersonalData = false
         if title == "" {
             isSearching = false
             let apiLink = "https://stayconnected.lol/api/posts/questions/?page=1&page_size=\(pageCount)"
@@ -160,47 +165,49 @@ final class FeedViewModel {
     }
     
     func currentUserQuestions() {
-        isPersonalData = true
         let api = "https://stayconnected.lol/api/user/currentuserquestions/"
         
         Task {
             do {
                 var token = try keyService.retrieveAccessToken()
-                let headers = ["Authorization": "Bearer \(token)"]
+                var headers = ["Authorization": "Bearer \(token)"]
                 
                 do{
-                    
-                    let response: [QuestionModel] = try await webService.fetchData(urlString: api, headers: headers)
-                    questionsArray = response
-                    DispatchQueue.main.async {[weak self] in
-                        self?.delegate?.didDataFetched()
-                    }
-                    
+                    try await fetchMyQuestions(api: api, headers: headers)
                 } catch {
                     if case NetworkError.statusCodeError(statusCode: let statusCode) = error, statusCode == 401 {
                         
                         try await tokenNetwork.getNewToken()
                         token = try keyService.retrieveAccessToken()
+                        headers = ["Authorization": "Bearer \(token)"]
                         
-                        let response: [QuestionModel] = try await webService.fetchData(urlString: api, headers: headers)
-                        questionsArray = response
-
-                        DispatchQueue.main.async {[weak self] in
-                            self?.delegate?.didDataFetched()
-                        }
+                        try await fetchMyQuestions(api: api, headers: headers)
                     }
                 }
             }
         }
     }
     
+    func fetchMyQuestions(api: String, headers: [String : String]) async throws {
+        isPersonalData = true
+        print(isPersonalData)
+        
+        let response: [QuestionModel] = try await webService.fetchData(urlString: api, headers: headers)
+        questionsArray = response
+        
+        DispatchQueue.main.async {[weak self] in
+            self?.delegate?.didDataFetched()
+        }
+    }
+    
     func deletePost(with id: Int) {
         let api = "https://stayconnected.lol/api/posts/questions/\(id)/"
-
+        
         Task{
             do {
                 var token = try keyService.retrieveAccessToken()
-                let headers = ["Authorization": "Bearer \(token)"]
+                var headers = ["Authorization": "Bearer \(token)"]
+                
                 do {
                     let _: () = try await deletionService.deleteData(urlString: api, headers: headers)
                     if isPersonalData {
@@ -210,9 +217,9 @@ final class FeedViewModel {
                     if case NetworkError.statusCodeError(statusCode: let statusCode) = error, statusCode == 401 {
                         try await tokenNetwork.getNewToken()
                         token = try keyService.retrieveAccessToken()
+                        headers = ["Authorization": "Bearer \(token)"]
                         
                         let _: () = try await deletionService.deleteData(urlString: api, headers: headers)
-                        
                     }
                 }
             }catch {

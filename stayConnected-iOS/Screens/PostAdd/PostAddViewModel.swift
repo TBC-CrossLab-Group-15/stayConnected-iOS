@@ -140,8 +140,8 @@ final class PostAddViewModel {
             headers: headers,
             body: body
         )
-        
         DispatchQueue.main.async {[weak self] in
+            self?.delegate?.didTagsRefreshed()
             self?.successDelegate?.didPostAddedSuccssfully()
         }
     }
