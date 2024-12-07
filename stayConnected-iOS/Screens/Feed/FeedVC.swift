@@ -404,7 +404,7 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
             return UISwipeActionsConfiguration()
         }
         
-        let rejectedAnswer = UIContextualAction(style: .destructive, title: "Reject") {[weak self] action, view, completionHandler in
+        let rejectedAnswer = UIContextualAction(style: .destructive, title: "Delete") {[weak self] action, view, completionHandler in
             self?.actionHandler(at: currentQuestion.id)
             completionHandler(true)
         }
