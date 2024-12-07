@@ -34,6 +34,16 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
         return label
     }()
     
+    private lazy var showMoreButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("show more", for: .normal)
+        button.setTitleColor(.primaryViolet, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        button.isHidden = true
+        return button
+    }()
+    
     private lazy var askedDate: UILabel = {
         let label = UILabel()
         return label
@@ -52,7 +62,6 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
         return label
     }()
 
-    
     private lazy var noCommentsImage: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "noQuestion")
@@ -107,6 +116,7 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
         view.addSubview(backButton)
         view.addSubview(topicTitle)
         view.addSubview(postTitle)
+        view.addSubview(showMoreButton)
         view.addSubview(askedDate)
         view.addSubview(commentsTable)
         view.addSubview(inputAnswer)
@@ -146,7 +156,10 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
             askedDate.topAnchor.constraint(equalTo: postTitle.bottomAnchor, constant: 4),
             askedDate.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             
-            commentsTable.topAnchor.constraint(equalTo: askedDate.bottomAnchor, constant: 20),
+            showMoreButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            showMoreButton.topAnchor.constraint(equalTo: askedDate.bottomAnchor, constant: 5),
+            
+            commentsTable.topAnchor.constraint(equalTo: showMoreButton.bottomAnchor, constant: 20),
             commentsTable.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             commentsTable.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
             commentsTable.bottomAnchor.constraint(equalTo: inputAnswer.topAnchor, constant: -12),
@@ -164,6 +177,8 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
     }
     
     private func configureView() {
+        var isFullyVisible = false
+        
         topicTitle.configureCustomText(
             text: questionModel.title,
             color: .primaryGray,
@@ -175,7 +190,8 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
             text: questionModel.text,
             color: .black,
             size: 20,
-            weight: .regular
+            weight: .regular,
+            lineNumber: 10
         )
         
         let date = izziDateFormatter.isoTimeFormatter(
@@ -196,6 +212,17 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
             size: 13,
             weight: .regular
         )
+        
+        if postTitle.text?.count ?? 0 > 550 {
+            showMoreButton.isHidden = false
+        }
+        
+        showMoreButton.addAction(UIAction(handler: {[weak self] _ in
+            isFullyVisible.toggle()
+            
+            self?.postTitle.numberOfLines = isFullyVisible ? 0 : 10
+            self?.showMoreButton.setTitle(isFullyVisible ? "show less" : "show more", for: .normal)
+        }), for: .touchUpInside)
     }
     
     func didAnswersFetched() {
