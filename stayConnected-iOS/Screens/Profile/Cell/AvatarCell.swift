@@ -45,6 +45,7 @@ class AvatarCell: UITableViewCell {
     }
     
     private func setupUI(){
+        contentView.backgroundColor = .bgWhite
         contentView.addSubview(cellStack)
         cellStack.addArrangedSubview(avatarImage)
         cellStack.addArrangedSubview(avatarName)
@@ -53,9 +54,9 @@ class AvatarCell: UITableViewCell {
         avatarImage.widthAnchor.constraint(equalToConstant: 50).isActive = true
 
         NSLayoutConstraint.activate([
-            cellStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
+            cellStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             cellStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
-            cellStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
+            cellStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
             cellStack.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: 0)
         ])
     }
@@ -64,7 +65,7 @@ class AvatarCell: UITableViewCell {
         avatarImage.image = UIImage(named: avatar)
         avatarName.configureCustomText(
             text: avatar,
-            color: .black,
+            color: .primaryBack,
             size: 16,
             weight: .bold
         )

@@ -50,7 +50,7 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         let label = UILabel()
         label.configureCustomText(
             text: "Profile",
-            color: .black,
+            color: .primaryBack,
             size: 20,
             weight: .bold
         )
@@ -61,7 +61,7 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         let label = UILabel()
         label.configureCustomText(
             text: "",
-            color: .black,
+            color: .primaryBack,
             size: 17,
             weight: .bold
         )
@@ -243,7 +243,7 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     }
     
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .primaryWhite
         view.addSubview(screenTitle)
         view.addSubview(avatarImage)
         view.addSubview(cameraIcon)
@@ -274,6 +274,9 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         let tapGestureL = UITapGestureRecognizer(target: self, action: #selector(logOut))
         thirdStack.addGestureRecognizer(tapGestureL)
         
+        let colorGesture = UITapGestureRecognizer(target: self, action: #selector(switchTheme))
+        secondStack.addGestureRecognizer(colorGesture)
+        
         loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(loadingIndicator)
         view.bringSubviewToFront(loadingIndicator)
@@ -281,6 +284,18 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         loadingIndicator.startAnimating()
         
         setupConstraints()
+    }
+    
+    @objc private func switchTheme() {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first {
+            let newStyle: UIUserInterfaceStyle = window.overrideUserInterfaceStyle == .dark ? .light : .dark
+            window.overrideUserInterfaceStyle = newStyle
+            
+            // Save the new style to UserDefaults
+            UserDefaults.standard.set(newStyle == .dark, forKey: "isDarkMode")
+        }
+        print("Theme switched and saved.")
     }
     
     private func setupConstraints() {

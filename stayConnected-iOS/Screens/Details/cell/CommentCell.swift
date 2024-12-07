@@ -81,7 +81,7 @@ class CommentCell: UITableViewCell {
         style: UITableViewCell.CellStyle,
         reuseIdentifier: String?
     ) {
-        self.izziDateFormatter = IzziDateFormatter() // Default formatter
+        self.izziDateFormatter = IzziDateFormatter()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
     }
@@ -101,6 +101,7 @@ class CommentCell: UITableViewCell {
     }
     
     private func setupUI() {
+        contentView.backgroundColor = .primaryWhite
         contentView.addSubview(mainStack)
         mainStack.addArrangedSubview(userInfoStack)
         userInfoStack.addArrangedSubview(avatarImage)
@@ -129,7 +130,7 @@ class CommentCell: UITableViewCell {
     func configureCell(with answer: Answer) {
         userName.configureCustomText(
             text: answer.user.firstName,
-            color: .black,
+            color: .primaryBack,
             size: 15,
             weight: .bold
         )
@@ -144,7 +145,7 @@ class CommentCell: UITableViewCell {
         
         commentDate.configureCustomText(
             text: date,
-            color: .black,
+            color: .primaryBack,
             size: 12,
             weight: .thin
         )

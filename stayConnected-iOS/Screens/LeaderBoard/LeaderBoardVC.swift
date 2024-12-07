@@ -15,7 +15,7 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
         let label = UILabel()
         label.configureCustomText(
             text: "LeaderBoard",
-            color: .black,
+            color: .primaryBack,
             size: 20,
             weight: .bold
         )
@@ -85,7 +85,7 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
         viewModel.delegate = self
         viewModel.fetchLeaderBoard()
         
-        view.backgroundColor = .white
+        view.backgroundColor = .primaryWhite
         view.addSubview(screenTitle)
         view.addSubview(horizonatlView)
         view.addSubview(verticalView)

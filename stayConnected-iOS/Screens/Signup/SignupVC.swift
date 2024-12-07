@@ -20,7 +20,8 @@ class SignUpVC: UIViewController, SignupProtocol {
     private lazy var backButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(named: "backIcon"), for: .normal)
+        button.setImage(UIImage(named: "backIcon")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = .backArrowCol
         button.addAction(UIAction(handler: {[weak self] _ in
             self?.navigationController?.popViewController(animated: true)
         }), for: .touchUpInside)
@@ -38,7 +39,7 @@ class SignUpVC: UIViewController, SignupProtocol {
         let label = UILabel()
         label.configureCustomText(
             text: "Sign Up",
-            color: .black,
+            color: .primaryBack,
             size: 30,
             weight: .bold
         )
@@ -85,7 +86,7 @@ class SignUpVC: UIViewController, SignupProtocol {
         let button = UIButton()
         button.configureCustomButton(
             title: "Sign Up",
-            color: .white,
+            color: .primaryWhite,
             fontName: "InterS",
             fontSize: 16,
             cornerR: 12,
@@ -110,7 +111,7 @@ class SignUpVC: UIViewController, SignupProtocol {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .primaryWhite
         
         setupUI()
     }
