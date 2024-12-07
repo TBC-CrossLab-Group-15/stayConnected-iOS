@@ -13,10 +13,12 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
     private let izziDateFormatter: IzziDateFormatterProtocol
     private let viewModel: DetailViewModel
     private let keyService: KeychainService
+    private let loadingIndicator: LoadingIndicator
     
     private let scrollView: UIScrollView = {
         let scroll = UIScrollView()
         scroll.translatesAutoresizingMaskIntoConstraints = false
+        scroll.showsVerticalScrollIndicator = false
         return scroll
     }()
     
@@ -73,7 +75,7 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
         view.addSubview(label)
         return label
     }()
-
+    
     private lazy var noCommentsImage: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "noQuestion")
@@ -100,12 +102,14 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
         questionModel: QuestionModel,
         izziDateFormatter: IzziDateFormatterProtocol = IzziDateFormatter(),
         viewModel: DetailViewModel = DetailViewModel(),
-        keyService: KeychainService = KeychainService()
+        keyService: KeychainService = KeychainService(),
+        loadingIndicator: LoadingIndicator = LoadingIndicator()
     ) {
         self.questionModel = questionModel
         self.izziDateFormatter = izziDateFormatter
         self.viewModel = viewModel
         self.keyService = keyService
+        self.loadingIndicator = loadingIndicator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -124,6 +128,7 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
         viewModel.refetchCurrentPostAnswers(with: questionModel.id)
         view.backgroundColor = .white
         inputAnswer.translatesAutoresizingMaskIntoConstraints = false
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(backButton)
         view.addSubview(scrollView)
@@ -134,12 +139,17 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
         contentView.addSubview(askedDate)
         contentView.addSubview(commentsTable)
         contentView.addSubview(inputAnswer)
+        view.addSubview(loadingIndicator)
+        view.bringSubviewToFront(loadingIndicator)
         
         setupConstraints()
         configureView()
         
         inputAnswer.onSendAction = {[weak self] in
             guard let self = self else { return }
+            loadingIndicator.center = view.center
+            loadingIndicator.startAnimating()
+            
             let inputValue = inputAnswer.value()
             
             guard inputValue.count > 0 else {
@@ -169,7 +179,7 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
             contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor), // Match scrollView width
+            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
             
             topicTitle.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
             topicTitle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
@@ -194,14 +204,17 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
             inputAnswer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
             inputAnswer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
             
-            noCommentLabel.topAnchor.constraint(equalTo: commentsTable.bottomAnchor, constant: 100),
+            noCommentLabel.topAnchor.constraint(equalTo: askedDate.bottomAnchor, constant: 100),
             noCommentLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
             noCommentsImage.topAnchor.constraint(equalTo: noCommentLabel.bottomAnchor, constant: 10),
             noCommentsImage.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            
+            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
-
+    
     private func configureView() {
         var isFullyVisible = false
         
@@ -231,7 +244,7 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
             finalFormat: "HH:mm",
             timeZoneOffset: 4
         )
-
+        
         askedDate.configureCustomText(
             text: "\(questionModel.user.firstName) asked \(date) at \(time)",
             color: .primaryGray,
@@ -253,6 +266,7 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
     
     func didAnswersFetched() {
         commentsTable.reloadData()
+        loadingIndicator.stopAnimating()
         print("🔴")
         if viewModel.answersArray.count == 0 {
             commentsTable.isHidden = true
@@ -326,10 +340,12 @@ extension DetailVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     private func actionHandler(at index: Int) {
+        loadingIndicator.startAnimating()
         viewModel.checkAnswer(at: index, postID: questionModel.id)
     }
     
     private func deletionHandler(with index: Int, and postID: Int) {
+        loadingIndicator.startAnimating()
         viewModel.deleteComment(with: index, and: postID)
     }
 }

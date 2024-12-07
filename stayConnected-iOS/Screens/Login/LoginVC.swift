@@ -19,6 +19,8 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
         return view
     }()
     
+    private let loadingIndicator: LoadingIndicator
+    
     private lazy var screenTitle: UILabel = {
         let label = UILabel()
         label.configureCustomText(
@@ -129,8 +131,12 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
         return button
     }()
     
-    init(viewModel: LoginViewModel = LoginViewModel()) {
+    init(
+        viewModel: LoginViewModel = LoginViewModel(),
+        loadingIndicator: LoadingIndicator = LoadingIndicator()
+    ) {
         self.viewModel = viewModel
+        self.loadingIndicator = loadingIndicator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -150,6 +156,11 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
         viewModel.delegate = self
         viewModel.errorDelebate = self
 
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        userNameInput.translatesAutoresizingMaskIntoConstraints = false
+        passwordField.translatesAutoresizingMaskIntoConstraints = false
+
+        view.addSubview(loadingIndicator)
         view.addSubview(screenTitle)
         view.addSubview(userNameInput)
         view.addSubview(pwdStack)
@@ -162,10 +173,7 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
         signUpStack.addArrangedSubview(spacerTwo)
         signUpStack.addArrangedSubview(signupButton)
         view.addSubview(loginButton)
-        
-        userNameInput.translatesAutoresizingMaskIntoConstraints = false
-        passwordField.translatesAutoresizingMaskIntoConstraints = false
-        
+    
         setupConstraints()
         
         loginButton.addAction(UIAction(handler: { [weak self] _ in
@@ -206,6 +214,9 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
     }
     
     private func login() {
+        loadingIndicator.center = view.center
+        loadingIndicator.startAnimating()
+        
         let userNameValue = userNameInput.value()
         let passwordValue = passwordField.value()
         

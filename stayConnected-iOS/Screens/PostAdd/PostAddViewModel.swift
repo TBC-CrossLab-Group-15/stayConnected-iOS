@@ -44,7 +44,6 @@ final class PostAddViewModel {
         self.tokenNetwork = tokenNetwork
         self.postService = postService
         self.feedViewModel = feedViewModel
-        
     }
     
     func fetchTags(api: String) {

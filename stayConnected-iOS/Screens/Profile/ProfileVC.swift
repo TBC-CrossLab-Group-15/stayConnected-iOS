@@ -11,6 +11,7 @@ import Foundation
 class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     private let viewModel: ProfileViewModel
     private let keychainService: KeychainService
+    private let loadingIndicator: LoadingIndicator
     
     private lazy var spacerOne: UIView = {
         let view = UIView()
@@ -211,9 +212,14 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         return label
     }()
     
-    init(viewModel: ProfileViewModel = ProfileViewModel(), keychainService: KeychainService = KeychainService()) {
+    init(
+        viewModel: ProfileViewModel = ProfileViewModel(),
+        keychainService: KeychainService = KeychainService(),
+        loadingIndicator: LoadingIndicator = LoadingIndicator()
+    ) {
         self.viewModel = viewModel
         self.keychainService = keychainService
+        self.loadingIndicator = loadingIndicator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -229,7 +235,6 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        navigationController?.setNavigationBarHidden(true, animated: false)
         
         viewModel.delegate = self
         viewModel.userInfoDelegate = self
@@ -268,6 +273,12 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         
         let tapGestureL = UITapGestureRecognizer(target: self, action: #selector(logOut))
         thirdStack.addGestureRecognizer(tapGestureL)
+        
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(loadingIndicator)
+        view.bringSubviewToFront(loadingIndicator)
+        loadingIndicator.center = view.center
+        loadingIndicator.startAnimating()
         
         setupConstraints()
     }
@@ -323,6 +334,9 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
             lineThree.topAnchor.constraint(equalTo: thirdStack.bottomAnchor, constant: 0),
             lineThree.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             lineThree.heightAnchor.constraint(equalToConstant: 1),
+            
+            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
     
@@ -367,5 +381,7 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
             self.asnwersCountLabel.text = "\(myAnswers)"
             self.avatarImage.image = UIImage(named: avatar ?? "testUser")
         }
+        
+        loadingIndicator.stopAnimating()
     }
 }

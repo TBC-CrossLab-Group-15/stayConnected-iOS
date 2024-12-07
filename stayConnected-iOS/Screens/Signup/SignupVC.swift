@@ -7,9 +7,9 @@
 
 import UIKit
 
-class SignUpVC: UIViewController {
+class SignUpVC: UIViewController, SignupProtocol {
     private var viewModel: SignUpViewModel
-    
+    private let loadingIndicator: LoadingIndicator
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -95,8 +95,12 @@ class SignUpVC: UIViewController {
         return button
     }()
     
-    init(viewModel: SignUpViewModel = SignUpViewModel()) {
+    init(
+        viewModel: SignUpViewModel = SignUpViewModel(),
+        loadingIndicator: LoadingIndicator = LoadingIndicator()
+    ) {
         self.viewModel = viewModel
+        self.loadingIndicator = loadingIndicator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -113,13 +117,16 @@ class SignUpVC: UIViewController {
     
     private func setupUI() {
         navigationController?.isNavigationBarHidden = true
+        viewModel.delegate = self
         
         name.translatesAutoresizingMaskIntoConstraints = false
         surnName.translatesAutoresizingMaskIntoConstraints = false
         email.translatesAutoresizingMaskIntoConstraints = false
         newPassword.translatesAutoresizingMaskIntoConstraints = false
         confirmPassword.translatesAutoresizingMaskIntoConstraints = false
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
         
+        view.addSubview(loadingIndicator)
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(backButton)
@@ -187,6 +194,10 @@ class SignUpVC: UIViewController {
         ])
     }
     
+    func didRegistered() {
+        navigationController?.pushViewController(LoginVC(), animated: true)
+    }
+    
     private func signupAction() {
         let nameValue = name.value()
         let surnameValue = surnName.value()
@@ -202,7 +213,10 @@ class SignUpVC: UIViewController {
             pwdTwo: confirmPassword.value()
         )
         
-        guard nameValue.count >= 2 else {
+        loadingIndicator.center = view.center
+        loadingIndicator.startAnimating()
+        
+        guard nameValue.count >= 3 else {
             return showAlert(title: "Let’s Fix This", message: "Name must be at least 2 characters.", buttonTitle: "Try Again")
         }
         
@@ -210,7 +224,7 @@ class SignUpVC: UIViewController {
             return showAlert(title: "Let’s Fix This", message: "Use only English letters.", buttonTitle: "Try Again")
         }
         
-        guard surnameValue.count >= 2 else {
+        guard surnameValue.count >= 3 else {
             return showAlert(title: "Let’s Fix This", message: "Last name must be at least 2 characters.", buttonTitle: "Try Again")
         }
         

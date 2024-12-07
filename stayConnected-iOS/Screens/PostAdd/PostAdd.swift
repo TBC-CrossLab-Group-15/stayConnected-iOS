@@ -14,6 +14,7 @@ protocol PresentedVCDelegate: AnyObject {
 class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPostedSuccessfully, DidPostingFailed {
     weak var delegate: PresentedVCDelegate?
     private let viewModel: PostAddViewModel
+    private let loadingIndicator: LoadingIndicator
     
     private let lineOne:UIView = {
         let lineView = UIView()
@@ -159,8 +160,12 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
     
     let postInput = AddFieldReusable(placeHolder: "Type your question here")
     
-    init(viewModel: PostAddViewModel = PostAddViewModel()) {
+    init(
+        viewModel: PostAddViewModel = PostAddViewModel(),
+        loadingIndicator: LoadingIndicator = LoadingIndicator()
+    ) {
         self.viewModel = viewModel
+        self.loadingIndicator = loadingIndicator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -174,6 +179,7 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
         viewModel.delegate = self
         viewModel.successDelegate = self
         viewModel.postingFailure = self
+        
         setupUI()
     }
     
@@ -204,6 +210,12 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
         headerBar.addSubview(cancelButton)
         view.addSubview(subjectInput)
         view.addSubview(postInput)
+        
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(loadingIndicator)
+        view.bringSubviewToFront(loadingIndicator)
+        loadingIndicator.center = view.center
+        
         setupConstraints()
         
         cancelButton.addAction(UIAction(handler: { [weak self] _ in
@@ -268,11 +280,13 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
             chooseTagCollection.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
             chooseTagCollection.heightAnchor.constraint(lessThanOrEqualToConstant: 200),
             
-            
             postInput.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             postInput.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             postInput.topAnchor.constraint(equalTo: chooseTagCollection.bottomAnchor, constant: 10),
             postInput.heightAnchor.constraint(equalToConstant: 47),
+            
+            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
     
@@ -283,6 +297,8 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
     private func addPostToDataBase() {
         let subjectValue = subjectInput.text
         let questionValue = postInput.value()
+        
+        loadingIndicator.startAnimating()
         
         guard subjectValue?.count ?? 0 > 0, questionValue.count > 0 else {
             return showAlert(title: "Let’s Fix This", message: "ill all fields", buttonTitle: "Try Again")
@@ -299,6 +315,7 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
         showAlert(title: "Well, That Was Easy!", message: "Question added successfully", buttonTitle: "Ask one more?")
         subjectInput.text = ""
         postInput.clearInput()
+        loadingIndicator.stopAnimating()
     }
     
     func didPostingFailed() {
