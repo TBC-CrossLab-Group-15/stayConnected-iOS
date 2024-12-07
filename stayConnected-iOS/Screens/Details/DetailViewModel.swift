@@ -18,6 +18,7 @@ final class DetailViewModel {
     private let putService: PutServiceProtocol
     private let keyService: TokenRetrieveProtocol
     private let webService: NetworkServiceProtocol
+    private let deletionService: DeleteMethodPorotocol
     var answersArray: [Answer] = []
     weak var delegate: ReloadAnswersDelegate?
     
@@ -26,16 +27,18 @@ final class DetailViewModel {
         tokenNetwork: TokenNetwork = TokenNetwork(),
         putService: PutServiceProtocol = PutService(),
         keyService: TokenRetrieveProtocol = KeychainService(),
-        webService: NetworkServiceProtocol = NetworkService()
+        webService: NetworkServiceProtocol = NetworkService(),
+        deletionService: DeleteMethodPorotocol = DeletionService()
     ) {
         self.postService = postService
         self.tokenNetwork = tokenNetwork
         self.putService = putService
         self.keyService = keyService
         self.webService = webService
+        self.deletionService = deletionService
     }
     
-    func getSinglePost(with postID: Int) {
+    func refetchCurrentPostAnswers(with postID: Int) {
         Task {
             let apiLink = "https://stayconnected.lol/api/posts/questions/\(postID)/"
             do {
@@ -64,7 +67,7 @@ final class DetailViewModel {
                 var headers = ["Authorization": "Bearer \(token)"]
                 do {
                     let _: AnswerModel = try await postService.postData(urlString: api, headers: headers, body: body)
-                    getSinglePost(with: postID)
+                    refetchCurrentPostAnswers(with: postID)
                     
                 } catch {
                     if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
@@ -73,19 +76,17 @@ final class DetailViewModel {
                         headers = ["Authorization": "Bearer \(token)"]
                         
                         let _: AnswerModel = try await postService.postData(urlString: api, headers: headers, body: body)
-                        getSinglePost(with: postID)
+                        refetchCurrentPostAnswers(with: postID)
                     } else {
+                        print("Error type: \(type(of: error)), Error: \(error)")
                         throw error
                     }
                 }
             } catch {
                 handleNetworkError(error)
+                print("Error type: \(type(of: error)), Error: \(error)")
             }
         }
-    }
-    
-    func getSingleUser(at: Int) {
-        
     }
     
     func checkAnswer(at index: Int, postID: Int) {
@@ -103,8 +104,8 @@ final class DetailViewModel {
                 do {
                     let response: AnswerStatusModel = try await putService.putData(urlString: api, headers: headers, body: body)
                     
-                    getSinglePost(with: postID)
-
+                    refetchCurrentPostAnswers(with: postID)
+                    
                     print("🦧 \(response)")
                 } catch {
                     if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
@@ -114,10 +115,12 @@ final class DetailViewModel {
                         
                         let response: AnswerStatusModel = try await putService.putData(urlString: api, headers: headers, body: body)
                         
-                        getSinglePost(with: postID)
-
+                        refetchCurrentPostAnswers(with: postID)
+                        
                         print("🕷️ \(response)")
                     } else {
+                        print("Error type: \(type(of: error)), Error: \(error)")
+
                         throw error
                     }
                 }
@@ -126,8 +129,41 @@ final class DetailViewModel {
             }
         }
     }
+    
+    func deleteComment(with answerID: Int, and postID: Int) {
+        let api = "https://stayconnected.lol/api/posts/answers/\(answerID)/"
+        Task{
+            do {
+                var token = try keyService.retrieveAccessToken()
+                var headers = ["Authorization" : "Bearer \(token)"]
+                
+                do {
+                    let _: () = try await deletionService.deleteData(urlString: api, headers: headers)
+                    refetchCurrentPostAnswers(with: postID)
+                } catch {
+                    if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
+                        try await tokenNetwork.getNewToken()
+                        token = try keyService.retrieveAccessToken()
+                        headers = ["Authorization": "Bearer \(token)"]
+                        
+                        let _: () = try await deletionService.deleteData(urlString: api, headers: headers)
+                        refetchCurrentPostAnswers(with: postID)
+                    } else {
+                        print("Error type: \(type(of: error)), Error: \(error)")
+
+                        throw error
+                    }
+                }
+            } catch {
+                handleNetworkError(error)
+            }
+        }
+    }
 }
 
-struct AnswerStatusModel: Codable {
-    let isCorrect: Bool
-}
+
+
+
+
+
+

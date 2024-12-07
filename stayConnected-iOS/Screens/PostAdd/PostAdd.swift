@@ -11,9 +11,10 @@ protocol PresentedVCDelegate: AnyObject {
     func didDismissPresentedVC()
 }
 
-class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
+class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPostedSuccessfully, DidPostingFailed {
     weak var delegate: PresentedVCDelegate?
     private let viewModel: PostAddViewModel
+    private let loadingIndicator: LoadingIndicator
     
     private let lineOne:UIView = {
         let lineView = UIView()
@@ -159,8 +160,12 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
     
     let postInput = AddFieldReusable(placeHolder: "Type your question here")
     
-    init(viewModel: PostAddViewModel = PostAddViewModel()) {
+    init(
+        viewModel: PostAddViewModel = PostAddViewModel(),
+        loadingIndicator: LoadingIndicator = LoadingIndicator()
+    ) {
         self.viewModel = viewModel
+        self.loadingIndicator = loadingIndicator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -172,7 +177,15 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
         viewModel.delegate = self
+        viewModel.successDelegate = self
+        viewModel.postingFailure = self
+        
         setupUI()
+    }
+    
+    override func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
+        viewModel.fetchTags(api: "https://stayconnected.lol/api/posts/tags/")
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -197,11 +210,18 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
         headerBar.addSubview(cancelButton)
         view.addSubview(subjectInput)
         view.addSubview(postInput)
+        
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(loadingIndicator)
+        view.bringSubviewToFront(loadingIndicator)
+        loadingIndicator.center = view.center
+        
         setupConstraints()
         
         cancelButton.addAction(UIAction(handler: { [weak self] _ in
             self?.closeModal()
         }), for: .touchUpInside)
+        
         postInput.translatesAutoresizingMaskIntoConstraints = false
         postInput.onSendAction = {[weak self] in
             self?.addPostToDataBase()
@@ -258,13 +278,15 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
             chooseTagCollection.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
             chooseTagCollection.topAnchor.constraint(equalTo: lineThree.topAnchor, constant: 10),
             chooseTagCollection.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-            chooseTagCollection.heightAnchor.constraint(lessThanOrEqualToConstant: 130),
-            
+            chooseTagCollection.heightAnchor.constraint(lessThanOrEqualToConstant: 200),
             
             postInput.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             postInput.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             postInput.topAnchor.constraint(equalTo: chooseTagCollection.bottomAnchor, constant: 10),
             postInput.heightAnchor.constraint(equalToConstant: 47),
+            
+            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
     
@@ -276,11 +298,30 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed {
         let subjectValue = subjectInput.text
         let questionValue = postInput.value()
         
-        viewModel.postedPost(api: "https://stayconnected.lol/api/posts/questions/", subject: subjectValue ?? "", question: questionValue)
+        loadingIndicator.startAnimating()
+        
+        guard subjectValue?.count ?? 0 > 0, questionValue.count > 0 else {
+            return showAlert(title: "Let’s Fix This", message: "ill all fields", buttonTitle: "Try Again")
+        }
+        
+        viewModel.attemptAddQuestion(api: "https://stayconnected.lol/api/posts/questions/", subject: subjectValue ?? "", question: questionValue)
     }
     
     func didTagsRefreshed() {
         chooseTagCollection.reloadData()
+    }
+    
+    func didPostAddedSuccssfully() {
+        showAlert(title: "Well, That Was Easy!", message: "Question added successfully", buttonTitle: "Ask one more?")
+        subjectInput.text = ""
+        postInput.clearInput()
+        loadingIndicator.stopAnimating()
+    }
+    
+    func didPostingFailed() {
+        let error = viewModel.errorMessage
+        showAlert(title: "Oh No!", message: error, buttonTitle: "Try Again")
+
     }
 }
 

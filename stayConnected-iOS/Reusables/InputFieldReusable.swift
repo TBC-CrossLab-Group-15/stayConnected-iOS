@@ -41,6 +41,7 @@ final class InputFieldReusable: UIView {
         field.layer.borderColor = UIColor.primaryGray.cgColor
         field.layer.cornerRadius = 8
         field.keyboardType = .default
+        field.autocapitalizationType = .none
         
         if isPassword {
             let leftIconContainer = UIView(frame: CGRect(x: 0, y: 0, width: 38, height: 51))

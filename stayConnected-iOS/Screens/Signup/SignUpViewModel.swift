@@ -9,9 +9,13 @@ import Foundation
 import UIKit
 import NetworkManagerFramework
 
+protocol SignupProtocol: AnyObject {
+    func didRegistered()
+}
 
 final class SignUpViewModel {
     private let postService: PostServiceProtocol
+    weak var delegate: SignupProtocol?
     
     init(postService: PostServiceProtocol = PostService()) {
         self.postService = postService
@@ -61,6 +65,9 @@ final class SignUpViewModel {
                     "Content-Type": "application/json"
                 ]
                 let _: UserRegistrationModel = try await postService.postData(urlString: url, headers: headers, body: body)
+                DispatchQueue.main.async {[weak self] in
+                    self?.delegate?.didRegistered()
+                }
             } catch {
                 if let urlError = error as? URLError {
                     print("URLError: \(urlError)")

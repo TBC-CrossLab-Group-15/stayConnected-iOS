@@ -9,11 +9,12 @@ import UIKit
 
 final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
     private let viewModel: LeaderBoardViewModel
+    private let loadingIndicator: LoadingIndicator
     
     private lazy var screenTitle: UILabel = {
         let label = UILabel()
         label.configureCustomText(
-            text: "Liderboard",
+            text: "LeaderBoard",
             color: .black,
             size: 20,
             weight: .bold
@@ -61,9 +62,11 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
     }()
     
     init(
-        viewModel: LeaderBoardViewModel = LeaderBoardViewModel()
+        viewModel: LeaderBoardViewModel = LeaderBoardViewModel(),
+        loadingIndicator: LoadingIndicator = LoadingIndicator()
     ) {
         self.viewModel = viewModel
+        self.loadingIndicator = loadingIndicator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -89,6 +92,12 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
         view.addSubview(boardView)
         boardView.addSubview(leadBoardTabel)
         
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(loadingIndicator)
+        view.bringSubviewToFront(loadingIndicator)
+        loadingIndicator.center = view.center
+        loadingIndicator.startAnimating()
+
         setupConstraints()
     }
     
@@ -116,6 +125,9 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
             leadBoardTabel.topAnchor.constraint(equalTo: boardView.topAnchor, constant: 16),
             leadBoardTabel.trailingAnchor.constraint(equalTo: boardView.trailingAnchor, constant: -16),
             leadBoardTabel.bottomAnchor.constraint(equalTo: boardView.bottomAnchor, constant: -16),
+            
+            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
     
@@ -170,6 +182,8 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
             thirdPlace.trailingAnchor.constraint(equalTo: horizonatlView.trailingAnchor, constant: -20),
             thirdPlace.bottomAnchor.constraint(equalTo: horizonatlView.bottomAnchor, constant: -20)
         ])
+        
+        loadingIndicator.stopAnimating()
     }
 }
 

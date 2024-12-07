@@ -20,6 +20,9 @@ final class TokenNetwork {
     }
     
     func getNewToken() async throws {
+        let oldToken = try? keyService.retrieveAccessToken()
+                print("⚠️ Old Token: \(oldToken ?? "Unavailable")")
+        
         guard let refreshToken = try? keyService.retrieveRefreshToken() else {
             print("❌ Missing Refresh Token")
             throw NetworkError.noData
@@ -27,7 +30,7 @@ final class TokenNetwork {
         
         let url = "https://stayconnected.lol/api/user/token/refresh/"
         let body = RefreshTokenModel(refresh: refreshToken)
-        
+        print("🔴🟢🔴🔴")
         do {
             let response: AccessTokenModel = try await webService.postData(
                 urlString: url,
@@ -39,31 +42,6 @@ final class TokenNetwork {
         } catch {
             print("❌ Failed to Refresh Token: \(error.localizedDescription)")
             throw error
-        }
-    }
-    
-    func renewTokenAndRetry<T>(
-        api: String,
-        retryFunction: (_ api: String, _ headers: [String: String]) async throws -> T
-    ) async {
-        do {
-            try await getNewToken()
-            print("🏆 Token successfully renewed")
-            
-            let newToken = try keyService.retrieveAccessToken()
-            print("👉 Retrieved new access token: \(newToken)")
-            
-            let headers = ["Authorization": "Bearer \(newToken)"]
-            print("🔑 Using Authorization Header: \(headers)")
-            
-            _ = try await retryFunction(api, headers)
-        } catch let caughtError {
-            print("❌ Token renewal failed: \(caughtError.localizedDescription)")
-            if case NetworkError.statusCodeError(let statusCode) = caughtError {
-                print("❌ Unexpected status code during retry: \(statusCode)")
-            } else {
-                print("❌ General Error: \(caughtError)")
-            }
         }
     }
 }

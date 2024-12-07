@@ -12,14 +12,14 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
     private let viewModel: FeedViewModel
     private let keyService: KeychainService
     private let postAddVC: PostAdd
+    private let loadingIndicator: LoadingIndicator
     private let spacerOne: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
     private var toggler = true
-    
+     
     private lazy var topStack: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -72,6 +72,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         button.addAction(UIAction(handler: {[weak self] _ in
             self?.toggler = true
             self?.updateButtonColors()
+            self?.loadingIndicator.startAnimating()
             self?.viewModel.updatePages()
         }), for: .touchUpInside)
         button.backgroundColor = toggler ? .primaryViolet : .primaryGray
@@ -88,6 +89,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         button.addAction(UIAction(handler: {[weak self] _ in
             self?.toggler = false
             self?.updateButtonColors()
+            self?.loadingIndicator.startAnimating()
             self?.viewModel.currentUserQuestions()
         }), for: .touchUpInside)
         button.backgroundColor = toggler ? .primaryGray : .primaryViolet
@@ -194,11 +196,13 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
     init(
         viewModel: FeedViewModel = FeedViewModel(),
         keyService: KeychainService = KeychainService(),
-        postAddVC: PostAdd = PostAdd()
+        postAddVC: PostAdd = PostAdd(),
+        loadingIndicator: LoadingIndicator = LoadingIndicator()
     ) {
         self.viewModel = viewModel
         self.keyService = keyService
         self.postAddVC = postAddVC
+        self.loadingIndicator = loadingIndicator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -209,7 +213,12 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         noQstack.isHidden = viewModel.questionsCount > 0 ? true : false
-        viewModel.updatePages()
+        loadingIndicator.startAnimating()
+        if viewModel.isPersonalData {
+            viewModel.currentUserQuestions()
+        } else {
+            viewModel.updatePages()
+        }
     }
     
     override func viewDidLoad() {
@@ -239,6 +248,11 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         noQstack.addArrangedSubview(beFirstLabel)
         noQstack.addArrangedSubview(noQuestionImage)
         view.addSubview(questionsTable)
+        
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(loadingIndicator)
+        view.bringSubviewToFront(loadingIndicator)
+        loadingIndicator.center = view.center
         
         setupConstraints()
     }
@@ -276,6 +290,9 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
             questionsTable.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             questionsTable.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
             questionsTable.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
+            
+            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
     
@@ -288,6 +305,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         noQstack.isHidden = viewModel.questionsCount > 0 ? true : false
         questionsTable.isHidden = viewModel.questionsCount > 0 ? false : true
         questionsTable.reloadData()
+        loadingIndicator.stopAnimating()
     }
     
     func didTagsFetched() {
@@ -298,6 +316,12 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         noQstack.isHidden = viewModel.questionsCount > 0 ? true : false
         questionsTable.isHidden = viewModel.questionsCount > 0 ? false : true
         questionsTable.reloadData()
+        loadingIndicator.stopAnimating()
+        
+        if !viewModel.isPersonalData {
+            buttonGeneral.backgroundColor = .primaryViolet
+            buttonPersonal.backgroundColor = .primaryGray
+        }
     }
     
     private func addPost() {
@@ -306,7 +330,11 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
     }
     
     func didDismissPresentedVC() {
-        viewModel.updatePages()
+        if viewModel.isPersonalData {
+            viewModel.currentUserQuestions()
+        } else {
+            viewModel.updatePages()
+        }
     }
 }
 
@@ -328,6 +356,10 @@ extension FeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let currentTagName = viewModel.singleTag(whit: indexPath.row).name
         viewModel.searchByTag(with: currentTagName)
+        loadingIndicator.startAnimating()
+        if currentTagName == "All" {
+            searchBar.text = ""
+        }
         print(currentTagName)
     }
 }
@@ -344,7 +376,7 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
         let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
         cell?.configureCell(with: currentQuestion)
         
-        if indexPath.row == viewModel.questionsCount - 1 {
+        if indexPath.row == viewModel.questionsCount - 1 && viewModel.questionsCount >= 10 {
             viewModel.updatePages()
         }
         
@@ -357,6 +389,33 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
         let vc  = DetailVC(questionModel: currentQuestion)
         vc.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
+        
+        guard let myID = try? keyService.retrieveUserID() else {
+            return UISwipeActionsConfiguration()
+        }
+        
+        
+        guard currentQuestion.user.id == Int(myID) else {
+            return UISwipeActionsConfiguration()
+        }
+        
+        let rejectedAnswer = UIContextualAction(style: .destructive, title: "Reject") {[weak self] action, view, completionHandler in
+            self?.actionHandler(at: currentQuestion.id)
+            completionHandler(true)
+        }
+        rejectedAnswer.backgroundColor = .systemRed
+        return UISwipeActionsConfiguration(actions: [rejectedAnswer])
+        
+    }
+    
+    private func actionHandler(at postID: Int) {
+        viewModel.deletePost(with: postID)
+        loadingIndicator.startAnimating()
     }
 }
 

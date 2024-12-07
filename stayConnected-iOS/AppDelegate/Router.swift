@@ -2,10 +2,17 @@ import UIKit
 
 final class Router: UIViewController {
     private let keychainService: KeychainService
+    private let tokenNetwork: TokenNetwork
     
-    init(keychainService: KeychainService = KeychainService()) {
+    init(
+        keychainService: KeychainService = KeychainService(),
+        tokenNetwork: TokenNetwork = TokenNetwork()
+    ) {
         self.keychainService = keychainService
+        self.tokenNetwork = tokenNetwork
         super.init(nibName: nil, bundle: nil)
+        
+        view.backgroundColor = .primaryViolet
     }
     
     required init?(coder: NSCoder) {
@@ -14,22 +21,25 @@ final class Router: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        start()
+        checTokenLife()
     }
+
     
-    func start() {
-        do {
-            let isToken = try keychainService.checkAccessToken()
-            
-            if isToken {
-                let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
-                sceneDelegate?.window?.rootViewController = TabBarController()
-            } else {
-                navigationController?.pushViewController(LoginVC(), animated: false)
+    private func checTokenLife() {
+        Task {
+            do {
+                try await tokenNetwork.getNewToken()
+                
+                DispatchQueue.main.async {
+                    let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
+                    sceneDelegate?.window?.rootViewController = TabBarController()
+                }
+            } catch {
+                DispatchQueue.main.async {[weak self] in
+                    print("Error checking token: \(error)")
+                    self?.navigationController?.pushViewController(LoginVC(), animated: false)
+                }
             }
-        } catch {
-            print("Error checking token: \(error)")
-            navigationController?.pushViewController(LoginVC(), animated: false)
         }
     }
 }

@@ -19,6 +19,8 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
         return view
     }()
     
+    private let loadingIndicator: LoadingIndicator
+    
     private lazy var screenTitle: UILabel = {
         let label = UILabel()
         label.configureCustomText(
@@ -129,8 +131,12 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
         return button
     }()
     
-    init(viewModel: LoginViewModel = LoginViewModel()) {
+    init(
+        viewModel: LoginViewModel = LoginViewModel(),
+        loadingIndicator: LoadingIndicator = LoadingIndicator()
+    ) {
         self.viewModel = viewModel
+        self.loadingIndicator = loadingIndicator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -150,6 +156,11 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
         viewModel.delegate = self
         viewModel.errorDelebate = self
 
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        userNameInput.translatesAutoresizingMaskIntoConstraints = false
+        passwordField.translatesAutoresizingMaskIntoConstraints = false
+
+        view.addSubview(loadingIndicator)
         view.addSubview(screenTitle)
         view.addSubview(userNameInput)
         view.addSubview(pwdStack)
@@ -162,10 +173,7 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
         signUpStack.addArrangedSubview(spacerTwo)
         signUpStack.addArrangedSubview(signupButton)
         view.addSubview(loginButton)
-        
-        userNameInput.translatesAutoresizingMaskIntoConstraints = false
-        passwordField.translatesAutoresizingMaskIntoConstraints = false
-        
+    
         setupConstraints()
         
         loginButton.addAction(UIAction(handler: { [weak self] _ in
@@ -206,15 +214,18 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
     }
     
     private func login() {
+        loadingIndicator.center = view.center
+        loadingIndicator.startAnimating()
+        
         let userNameValue = userNameInput.value()
         let passwordValue = passwordField.value()
         
         guard !userNameValue.isEmpty else {
-            return errorModal(text: "enter username")
+            return showAlert(title: "Let’s Fix This", message: "Enter username", buttonTitle: "Try Again")
         }
         
         guard !passwordValue.isEmpty else {
-            return errorModal(text: "enter password")
+            return showAlert(title: "Let’s Fix This", message: "Enter password", buttonTitle: "Try Again")
         }
         
         viewModel.loginAction(email: userNameValue, password: passwordValue)
@@ -228,19 +239,13 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
         navigationController?.pushViewController(SignUpVC(), animated: true)
     }
     
-    private func errorModal(text: String) {
-        let alert = UIAlertController(title: "Error", message: text, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Try Again", style: .default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
-    }
-    
     func navigateToFeed() {
         let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
         sceneDelegate?.window?.rootViewController = TabBarController()
     }
     
     func didLoginFailed() {
-        errorModal(text: "Invalid username or password")
+        showAlert(title: "Let’s Fix This", message: "Invalid username or password", buttonTitle: "Try Again")
     }
 }
 

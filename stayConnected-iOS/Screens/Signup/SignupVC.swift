@@ -7,9 +7,9 @@
 
 import UIKit
 
-class SignUpVC: UIViewController {
+class SignUpVC: UIViewController, SignupProtocol {
     private var viewModel: SignUpViewModel
-    
+    private let loadingIndicator: LoadingIndicator
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -95,8 +95,12 @@ class SignUpVC: UIViewController {
         return button
     }()
     
-    init(viewModel: SignUpViewModel = SignUpViewModel()) {
+    init(
+        viewModel: SignUpViewModel = SignUpViewModel(),
+        loadingIndicator: LoadingIndicator = LoadingIndicator()
+    ) {
         self.viewModel = viewModel
+        self.loadingIndicator = loadingIndicator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -113,13 +117,16 @@ class SignUpVC: UIViewController {
     
     private func setupUI() {
         navigationController?.isNavigationBarHidden = true
+        viewModel.delegate = self
         
         name.translatesAutoresizingMaskIntoConstraints = false
         surnName.translatesAutoresizingMaskIntoConstraints = false
         email.translatesAutoresizingMaskIntoConstraints = false
         newPassword.translatesAutoresizingMaskIntoConstraints = false
         confirmPassword.translatesAutoresizingMaskIntoConstraints = false
-    
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(loadingIndicator)
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(backButton)
@@ -155,7 +162,7 @@ class SignUpVC: UIViewController {
             backButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             backButton.widthAnchor.constraint(equalToConstant: 24),
             backButton.heightAnchor.constraint(equalToConstant: 24),
-
+            
             screenTitle.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: 12),
             screenTitle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 18),
             
@@ -186,12 +193,10 @@ class SignUpVC: UIViewController {
             signUpButton.heightAnchor.constraint(equalToConstant: 59)
         ])
     }
-
-    private func errorModal(text: String) {
-            let alert = UIAlertController(title: "Error", message: text, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Try Again", style: .default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
-        }
+    
+    func didRegistered() {
+        navigationController?.pushViewController(LoginVC(), animated: true)
+    }
     
     private func signupAction() {
         let nameValue = name.value()
@@ -208,38 +213,41 @@ class SignUpVC: UIViewController {
             pwdTwo: confirmPassword.value()
         )
         
+        loadingIndicator.center = view.center
+        loadingIndicator.startAnimating()
+        
         guard nameValue.count >= 3 else {
-            return errorModal(text: "name must be more than 3")
+            return showAlert(title: "Let’s Fix This", message: "Name must be at least 2 characters.", buttonTitle: "Try Again")
         }
         
         guard isEnglishChars else {
-            return errorModal(text: "Enter name with english")
+            return showAlert(title: "Let’s Fix This", message: "Use only English letters.", buttonTitle: "Try Again")
         }
         
         guard surnameValue.count >= 3 else {
-            return errorModal(text: "surname must be more than 3")
+            return showAlert(title: "Let’s Fix This", message: "Last name must be at least 2 characters.", buttonTitle: "Try Again")
         }
         
         guard isEnglishCharsSurname else {
-            return errorModal(text: "Enter surname with english")
+            return showAlert(title: "Let’s Fix This", message: "Use only English letters.", buttonTitle: "Try Again")
         }
-
+        
         guard isCorrectEmail else {
-            return errorModal(text: "not email")
+            return showAlert(title: "Let’s Fix This", message: "Please enter a valid email address.", buttonTitle: "Try Again")
         }
         
         guard pwdValue.count >= 8 else {
-            return errorModal(text: "password must be at last 8")
+            return showAlert(title: "Let’s Fix This", message: "Password must be at least 8 characters.", buttonTitle: "Try Again")
         }
         
         guard isStrongPassword else {
-            return errorModal(text: "password is weak")
+            return showAlert(title: "Let’s Fix This", message: "The password must contain at least one uppercase letter, a number, and a symbol.", buttonTitle: "Try Again")
         }
         
         guard isPasswordsEqual else {
-            return errorModal(text: "Passwords not equal")
+            return showAlert(title: "Let’s Fix This", message: "Passwords do not match.", buttonTitle: "Try Again")
         }
-    
+        
         viewModel.signUpAction(
             firstName: nameValue,
             lastName: surnameValue,
