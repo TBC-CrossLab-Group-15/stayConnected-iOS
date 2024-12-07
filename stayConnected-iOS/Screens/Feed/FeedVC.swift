@@ -72,8 +72,8 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         button.addAction(UIAction(handler: {[weak self] _ in
             self?.toggler = true
             self?.updateButtonColors()
-            self?.viewModel.updatePages()
             self?.loadingIndicator.startAnimating()
+            self?.viewModel.updatePages()
         }), for: .touchUpInside)
         button.backgroundColor = toggler ? .primaryViolet : .primaryGray
         return button
@@ -213,7 +213,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         noQstack.isHidden = viewModel.questionsCount > 0 ? true : false
-
+        loadingIndicator.startAnimating()
         if viewModel.isPersonalData {
             viewModel.currentUserQuestions()
         } else {

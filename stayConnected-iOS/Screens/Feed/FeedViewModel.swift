@@ -60,7 +60,6 @@ final class FeedViewModel {
     }
     
     func fetchData(api: String) {
-        print("⚠️")
         Task {
             do {
                 let fetchedData: QuestionsResponse = try await webService.fetchData(urlString: api, headers: [:])
@@ -70,7 +69,6 @@ final class FeedViewModel {
                     self?.delegate?.didDataFetched()
                 }
             } catch {
-                print("❌")
                 handleNetworkError(error)
             }
         }
@@ -100,15 +98,10 @@ final class FeedViewModel {
     
     func updatePages() {
         isPersonalData = false
-        print(isPersonalData)
-        
-        guard !isSearching else { return }
-        
+
         pageCount += 10
         let apiLink = "https://stayconnected.lol/api/posts/questions/?page=1&page_size=\(pageCount)"
         fetchData(api: apiLink)
-        
-        print("count: \(pageCount) : total: \(totalCount)")
     }
     
     func searchByTag(with tag: String) {
@@ -190,7 +183,6 @@ final class FeedViewModel {
     
     func fetchMyQuestions(api: String, headers: [String : String]) async throws {
         isPersonalData = true
-        print(isPersonalData)
         
         let response: [QuestionModel] = try await webService.fetchData(urlString: api, headers: headers)
         questionsArray = response
