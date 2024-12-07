@@ -341,7 +341,7 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     }
     
     @objc func logOut() throws {
-        try keychainService.removeTokens()
+        try viewModel.logOut()
         
         if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
             let loginViewController = LoginVC()

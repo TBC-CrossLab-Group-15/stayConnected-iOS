@@ -157,5 +157,24 @@ final class ProfileViewModel {
         avatarName = name
         delegate?.didAvatarChanged()
     }
+    
+    func logOut() throws {
+        let api = "https://stayconnected.lol/api/user/logout/"
+
+        Task {
+            do {
+                let refreshToken = try keyService.retrieveRefreshToken()
+                let body = LogoutModel(refresh: refreshToken)
+                
+                let _: LogoutModel = try await postService.postData(urlString: api, headers: nil, body: body)
+                try keyService.removeTokens()
+                print("✅")
+            } catch {
+                handleNetworkError(error)
+            }
+        }
+        
+        try keyService.removeTokens()
+    }
 }
 
