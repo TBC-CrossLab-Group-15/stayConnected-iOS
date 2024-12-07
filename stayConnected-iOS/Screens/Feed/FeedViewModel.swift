@@ -28,9 +28,10 @@ final class FeedViewModel {
     private var pageCount = 0
     private var totalCount = 0
     private var isSearching = false
-    private var isFinishedPaging = false
+    private var isPersonalData = false
     private let tagApiLink = "https://stayconnected.lol/api/posts/tags/"
     private let webService: NetworkServiceProtocol
+    private let deletionService: DeleteMethodPorotocol
     private var questionsArray: [QuestionModel] = []
     private let keyService: KeychainService
     private let tokenNetwork: TokenNetwork
@@ -44,11 +45,13 @@ final class FeedViewModel {
     init(
         webService: NetworkServiceProtocol = NetworkService(),
         keyService: KeychainService = KeychainService(),
-        tokenNetwork: TokenNetwork = TokenNetwork()
+        tokenNetwork: TokenNetwork = TokenNetwork(),
+        deletionService: DeleteMethodPorotocol = DeletionService()
     ) {
         self.webService = webService
         self.keyService = keyService
         self.tokenNetwork = tokenNetwork
+        self.deletionService = deletionService
         fetchTagsData(api: tagApiLink)
     }
     
@@ -63,7 +66,6 @@ final class FeedViewModel {
                 let fetchedData: QuestionsResponse = try await webService.fetchData(urlString: api, headers: [:])
                 totalCount = fetchedData.count
                 questionsArray = fetchedData.results
-                print("✅")
                 DispatchQueue.main.async {[weak self] in
                     self?.delegate?.didDataFetched()
                 }
@@ -98,22 +100,13 @@ final class FeedViewModel {
     
     func updatePages() {
         guard !isSearching else { return }
-        //        guard pageCount <= totalCount else { return }
-        //        isFinishedPaging = true
+        
         pageCount += 10
         let apiLink = "https://stayconnected.lol/api/posts/questions/?page=1&page_size=\(pageCount)"
         fetchData(api: apiLink)
-        
+
         print("count: \(pageCount) : total: \(totalCount)")
     }
-    
-    //    func renewFeed() {
-    //        if isFinishedPaging {
-    //            print("‼️ \(pageCount)")
-    //            let apiLink = "https://stayconnected.lol/api/posts/questions/?page=1&page_size=\(pageCount)"
-    //            fetchData(api: apiLink)
-    //        }
-    //    }
     
     func searchByTag(with tag: String) {
         
@@ -167,23 +160,25 @@ final class FeedViewModel {
     }
     
     func currentUserQuestions() {
+        isPersonalData = true
         let api = "https://stayconnected.lol/api/user/currentuserquestions/"
         
         Task {
-            
-            
             do {
                 var token = try keyService.retrieveAccessToken()
                 let headers = ["Authorization": "Bearer \(token)"]
+                
                 do{
+                    
                     let response: [QuestionModel] = try await webService.fetchData(urlString: api, headers: headers)
-                    print(response)
                     questionsArray = response
                     DispatchQueue.main.async {[weak self] in
                         self?.delegate?.didDataFetched()
                     }
+                    
                 } catch {
                     if case NetworkError.statusCodeError(statusCode: let statusCode) = error, statusCode == 401 {
+                        
                         try await tokenNetwork.getNewToken()
                         token = try keyService.retrieveAccessToken()
                         
@@ -193,11 +188,36 @@ final class FeedViewModel {
                         DispatchQueue.main.async {[weak self] in
                             self?.delegate?.didDataFetched()
                         }
-
                     }
                 }
             }
         }
     }
     
+    func deletePost(with id: Int) {
+        let api = "https://stayconnected.lol/api/posts/questions/\(id)/"
+
+        Task{
+            do {
+                var token = try keyService.retrieveAccessToken()
+                let headers = ["Authorization": "Bearer \(token)"]
+                do {
+                    let _: () = try await deletionService.deleteData(urlString: api, headers: headers)
+                    if isPersonalData {
+                        currentUserQuestions()
+                    }
+                } catch {
+                    if case NetworkError.statusCodeError(statusCode: let statusCode) = error, statusCode == 401 {
+                        try await tokenNetwork.getNewToken()
+                        token = try keyService.retrieveAccessToken()
+                        
+                        let _: () = try await deletionService.deleteData(urlString: api, headers: headers)
+                        
+                    }
+                }
+            }catch {
+                handleNetworkError(error)
+            }
+        }
+    }
 }

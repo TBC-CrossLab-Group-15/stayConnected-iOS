@@ -177,6 +177,11 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
         setupUI()
     }
     
+    override func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
+        viewModel.fetchTags(api: "https://stayconnected.lol/api/posts/tags/")
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if isBeingDismissed {
@@ -204,6 +209,7 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
         cancelButton.addAction(UIAction(handler: { [weak self] _ in
             self?.closeModal()
         }), for: .touchUpInside)
+        
         postInput.translatesAutoresizingMaskIntoConstraints = false
         postInput.onSendAction = {[weak self] in
             self?.addPostToDataBase()
@@ -260,7 +266,7 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
             chooseTagCollection.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
             chooseTagCollection.topAnchor.constraint(equalTo: lineThree.topAnchor, constant: 10),
             chooseTagCollection.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-            chooseTagCollection.heightAnchor.constraint(lessThanOrEqualToConstant: 130),
+            chooseTagCollection.heightAnchor.constraint(lessThanOrEqualToConstant: 200),
             
             
             postInput.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -282,7 +288,7 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
             return showAlert(title: "Let’s Fix This", message: "ill all fields", buttonTitle: "Try Again")
         }
         
-        viewModel.postedPost(api: "https://stayconnected.lol/api/posts/questions/", subject: subjectValue ?? "", question: questionValue)
+        viewModel.attemptAddQuestion(api: "https://stayconnected.lol/api/posts/questions/", subject: subjectValue ?? "", question: questionValue)
     }
     
     func didTagsRefreshed() {

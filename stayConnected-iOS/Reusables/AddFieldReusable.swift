@@ -6,7 +6,6 @@
 //
 
 import UIKit
-
 final class AddFieldReusable: UIView {
     private let placeHolder: String
     var onSendAction: (() -> Void)?

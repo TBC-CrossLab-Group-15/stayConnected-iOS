@@ -344,7 +344,7 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
         let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
         cell?.configureCell(with: currentQuestion)
         
-        if indexPath.row == viewModel.questionsCount - 1 {
+        if indexPath.row == viewModel.questionsCount - 1 && viewModel.questionsCount >= 10 {
             viewModel.updatePages()
         }
         
@@ -357,6 +357,32 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
         let vc  = DetailVC(questionModel: currentQuestion)
         vc.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let currentQuestion = viewModel.singleQuestion(with: indexPath.row)
+
+        guard let myID = try? keyService.retrieveUserID() else {
+            return UISwipeActionsConfiguration()
+        }
+        
+        
+        guard currentQuestion.user.id == Int(myID) else {
+            return UISwipeActionsConfiguration()
+        }
+
+        let rejectedAnswer = UIContextualAction(style: .destructive, title: "Reject") {[weak self] action, view, completionHandler in
+            self?.actionHandler(at: currentQuestion.id)
+            completionHandler(true)
+        }
+        rejectedAnswer.backgroundColor = .systemRed
+        return UISwipeActionsConfiguration(actions: [rejectedAnswer])
+        
+    }
+    
+    private func actionHandler(at postID: Int) {
+        viewModel.deletePost(with: postID)
     }
 }
 

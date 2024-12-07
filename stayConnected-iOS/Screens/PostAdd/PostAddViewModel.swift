@@ -45,31 +45,40 @@ final class PostAddViewModel {
         self.postService = postService
         self.feedViewModel = feedViewModel
         
-        fetchTags(api: "https://stayconnected.lol/api/posts/tags/")
     }
     
     func fetchTags(api: String) {
         Task {
+            
+            var token = try keyService.retrieveAccessToken()
+            print("👷🏿‍♂️ \(token)")
+            var headers = ["Authorization": "Bearer \(token)"]
+            
             do {
-                let token = try keyService.retrieveAccessToken()
-                
-                let headers = ["Authorization": "Bearer \(token)"]
-                try await getTags(api: api, headers: headers)
+                let fetchedData: [Tag] = try await webService.fetchData(urlString: api, headers: [:])
+                inactiveTags = fetchedData
+                print("🔥")
+                DispatchQueue.main.async { [weak self] in
+                    self?.delegate?.didTagsRefreshed()
+                }
             } catch {
                 if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
-                    await tokenNetwork.renewTokenAndRetry(api: api, retryFunction: getTags)
+                    try await tokenNetwork.getNewToken()
+                    token = try keyService.retrieveAccessToken()
+                    print("🧝‍♂️ \(token)")
+                    
+                    headers = ["Authorization": "Bearer \(token)"]
+                    
+                    let fetchedData: [Tag] = try await webService.fetchData(urlString: api, headers: headers)
+                    inactiveTags = fetchedData
+                    DispatchQueue.main.async { [weak self] in
+                        self?.delegate?.didTagsRefreshed()
+                    }
+                    
                 } else {
                     handleNetworkError(error)
                 }
             }
-        }
-    }
-    
-    func getTags(api: String, headers: [String : String]) async throws {
-        let fetchedData: [Tag] = try await webService.fetchData(urlString: api, headers: headers)
-        inactiveTags = fetchedData
-        DispatchQueue.main.async { [weak self] in
-            self?.delegate?.didTagsRefreshed()
         }
     }
     
@@ -91,42 +100,49 @@ final class PostAddViewModel {
         inactiveTags.remove(at: index)
     }
     
-    func postedPost(api: String, subject: String, question: String) {
+    func attemptAddQuestion(api: String, subject: String, question: String) {
+        let tagIds = activeTags.map { $0.id }
+        let body = PostModel(title: subject, text: question, tags: tagIds)
+        
         Task {
             do {
-                let token = try keyService.retrieveAccessToken()
-                let headers = ["Authorization": "Bearer \(token)"]
-                try await postQuestion(api: api, subject: subject, question: question, headers: headers)
+                var token = try keyService.retrieveAccessToken()
+                var headers = ["Authorization": "Bearer \(token)"]
+                
+                do {
+                   try await postQuestion(api: api, headers: headers, body: body)
+                   
+                } catch {
+                    if case NetworkError.statusCodeError(statusCode: let statusCode) = error, statusCode == 401 {
+                        
+                        try await tokenNetwork.getNewToken()
+                        token = try keyService.retrieveAccessToken()
+                        headers = ["Authorization": "Bearer \(token)"]
+                        
+                        try await postQuestion(api: api, headers: headers, body: body)
+
+                    } else {
+                        throw error
+                    }
+                }
             } catch {
-                if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
-                    await tokenNetwork.renewTokenAndRetry(api: api) {[weak self] api, headers in
-                        try await self?.postQuestion(api: api, subject: subject, question: question, headers: headers)
-                    }
-                } else {
-                    print("❌ Failed to post question: \(error.localizedDescription)")
-                    handleNetworkError(error)
-                    DispatchQueue.main.async {[weak self] in
-                        self?.postingFailure?.didPostingFailed()
-                    }
+                handleNetworkError(error)
+                DispatchQueue.main.async { [weak self] in
+                    self?.postingFailure?.didPostingFailed()
                 }
             }
         }
     }
     
-    func postQuestion(api: String, subject: String, question: String, headers: [String: String]) async throws {
-        let tagIds = activeTags.map { $0.id }
+    func postQuestion(api: String, headers: [String : String], body: PostModel) async throws {
+        let _ : PostModelResponse = try await postService.postData(
+            urlString: api,
+            headers: headers,
+            body: body
+        )
         
-        let body = PostModel(title: subject, text: question, tags: tagIds)
-        
-        do {
-            let _ : PostModelResponse = try await postService.postData(urlString: api, headers: headers, body: body)
-            DispatchQueue.main.async {[weak self] in
-                self?.successDelegate?.didPostAddedSuccssfully()
-            }
-        } catch {
-            print("Error: \(error)")
-            errorMessage = error.localizedDescription
-            throw error
+        DispatchQueue.main.async {[weak self] in
+            self?.successDelegate?.didPostAddedSuccssfully()
         }
     }
 }

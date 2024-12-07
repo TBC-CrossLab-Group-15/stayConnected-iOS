@@ -13,7 +13,7 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
     private lazy var screenTitle: UILabel = {
         let label = UILabel()
         label.configureCustomText(
-            text: "Liderboard",
+            text: "LeaderBoard",
             color: .black,
             size: 20,
             weight: .bold

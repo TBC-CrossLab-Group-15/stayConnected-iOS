@@ -24,12 +24,11 @@ final class ProfileViewModel {
     private let webService: NetworkServiceProtocol
     private let postService: PostServiceProtocol
     private let putService: PutServiceProtocol
-
+    
     private let tokenNetwork: TokenNetwork
     var profileInfo: ProfileModel?
-    private var token = ""
     var avatarName: String = ""
-
+    
     private var avatarsArray: [Avatar] = []
     
     init(
@@ -49,19 +48,24 @@ final class ProfileViewModel {
     func fetchData(api: String) {
         Task {
             do {
-                token = try keyService.retrieveAccessToken()
-                print("✅ Token Retrieved: \(token)")
+                var token = try keyService.retrieveAccessToken()
+                var headers = ["Authorization": "Bearer \(token)"]
                 
-                let headers = ["Authorization": "Bearer \(token)"]
-                try await fetchProfileData(api: api, headers: headers)
-            } catch {
-                if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
-                    print("⚠️ Token expired, attempting to renew...")
-                    await tokenNetwork.renewTokenAndRetry(api: api, retryFunction: fetchProfileData)
-                } else {
-                    print("❌ Failed to fetch data: \(error.localizedDescription)")
-                    handleNetworkError(error)
+                do {
+                    try await fetchProfileData(api: api, headers: headers)
+                } catch {
+                    if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
+                        try await tokenNetwork.getNewToken()
+                        token = try keyService.retrieveAccessToken()
+                        headers = ["Authorization": "Bearer \(token)"]
+                        
+                        try await fetchProfileData(api: api, headers: headers)
+                    } else {
+                        throw error
+                    }
                 }
+            } catch {
+                handleNetworkError(error)
             }
         }
     }
@@ -78,19 +82,24 @@ final class ProfileViewModel {
     func fetchedAvatars(api: String){
         Task {
             do {
-                token = try keyService.retrieveAccessToken()
-                print("✅ Token Retrieved: \(token)")
+                var token = try keyService.retrieveAccessToken()
+                var headers = ["Authorization": "Bearer \(token)"]
                 
-                let headers = ["Authorization": "Bearer \(token)"]
-                try await getAvatars(api: api, headers: headers)
-            } catch {
-                if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
-                    print("⚠️ Token expired, attempting to renew...")
-                    await tokenNetwork.renewTokenAndRetry(api: api, retryFunction: getAvatars)
-                } else {
-                    print("❌ Failed to fetch data: \(error.localizedDescription)")
-                    handleNetworkError(error)
+                do {
+                    try await getAvatars(api: api, headers: headers)
+                } catch {
+                    if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
+                        try await tokenNetwork.getNewToken()
+                        token = try keyService.retrieveAccessToken()
+                        headers = ["Authorization": "Bearer \(token)"]
+                        
+                        try await getAvatars(api: api, headers: headers)
+                    } else {
+                        throw error
+                    }
                 }
+            } catch {
+                handleNetworkError(error)
             }
         }
     }
@@ -100,40 +109,38 @@ final class ProfileViewModel {
         avatarsArray = fetchedAvatars
     }
     
-    
     private func sendAvatarToDb(name: String, headers: [String : String]) async throws {
         let userID = try keyService.retrieveUserID()
         let url = "https://stayconnected.lol/api/user/profile/\(userID)/"
         let body = AvatarReqBodyModel(avatarId: name )
-        print(body)
-        Task {
-            do {
-                let response: AvatarReqBodyModel = try await putService.putData(urlString: url, headers: headers, body: body)
-                print("------------")
-                print(response)
-            } catch {
-                print("Error: \(error)")
-            }
-        }
+        
+        let response: AvatarReqBodyModel = try await putService.putData(urlString: url, headers: headers, body: body)
+        print(response)
     }
     
     func postedAvatar(name: String){
         print(name)
         Task {
             do {
-                token = try keyService.retrieveAccessToken()
-                print("✅ Token Retrieved: \(token)")
+                var token = try keyService.retrieveAccessToken()
+                var headers = ["Authorization": "Bearer \(token)"]
                 
-                let headers = ["Authorization": "Bearer \(token)"]
-                try await sendAvatarToDb(name: name, headers: headers)
-            } catch {
-                if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
-                    print("⚠️ Token expired, attempting to renew...")
-                    await tokenNetwork.renewTokenAndRetry(api: "", retryFunction: sendAvatarToDb)
-                } else {
-                    print("❌ Failed to fetch data: \(error.localizedDescription)")
-                    handleNetworkError(error)
+                do {
+                    try await sendAvatarToDb(name: name, headers: headers)
+                } catch {
+                    if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
+                        try await tokenNetwork.getNewToken()
+                        
+                        token = try keyService.retrieveAccessToken()
+                        headers = ["Authorization": "Bearer \(token)"]
+                        
+                        try await sendAvatarToDb(name: name, headers: headers)
+                    } else {
+                        throw error
+                    }
                 }
+            } catch {
+                handleNetworkError(error)
             }
         }
     }

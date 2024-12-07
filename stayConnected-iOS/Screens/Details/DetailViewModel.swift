@@ -78,15 +78,17 @@ final class DetailViewModel {
                         let _: AnswerModel = try await postService.postData(urlString: api, headers: headers, body: body)
                         refetchCurrentPostAnswers(with: postID)
                     } else {
+                        print("Error type: \(type(of: error)), Error: \(error)")
                         throw error
                     }
                 }
             } catch {
                 handleNetworkError(error)
+                print("Error type: \(type(of: error)), Error: \(error)")
             }
         }
     }
-
+    
     func checkAnswer(at index: Int, postID: Int) {
         let currentAnswer = answersArray[index]
         print(currentAnswer.isCorrect)
@@ -103,7 +105,7 @@ final class DetailViewModel {
                     let response: AnswerStatusModel = try await putService.putData(urlString: api, headers: headers, body: body)
                     
                     refetchCurrentPostAnswers(with: postID)
-
+                    
                     print("🦧 \(response)")
                 } catch {
                     if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
@@ -114,9 +116,11 @@ final class DetailViewModel {
                         let response: AnswerStatusModel = try await putService.putData(urlString: api, headers: headers, body: body)
                         
                         refetchCurrentPostAnswers(with: postID)
-
+                        
                         print("🕷️ \(response)")
                     } else {
+                        print("Error type: \(type(of: error)), Error: \(error)")
+
                         throw error
                     }
                 }
@@ -137,12 +141,18 @@ final class DetailViewModel {
                     let _: () = try await deletionService.deleteData(urlString: api, headers: headers)
                     refetchCurrentPostAnswers(with: postID)
                 } catch {
-                    try await tokenNetwork.getNewToken()
-                    token = try keyService.retrieveAccessToken()
-                    headers = ["Authorization": "Bearer \(token)"]
-                    
-                    let _: () = try await deletionService.deleteData(urlString: api, headers: headers)
-                    refetchCurrentPostAnswers(with: postID)
+                    if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
+                        try await tokenNetwork.getNewToken()
+                        token = try keyService.retrieveAccessToken()
+                        headers = ["Authorization": "Bearer \(token)"]
+                        
+                        let _: () = try await deletionService.deleteData(urlString: api, headers: headers)
+                        refetchCurrentPostAnswers(with: postID)
+                    } else {
+                        print("Error type: \(type(of: error)), Error: \(error)")
+
+                        throw error
+                    }
                 }
             } catch {
                 handleNetworkError(error)
@@ -151,9 +161,7 @@ final class DetailViewModel {
     }
 }
 
-struct AnswerStatusModel: Codable {
-    let isCorrect: Bool
-}
+
 
 
 
