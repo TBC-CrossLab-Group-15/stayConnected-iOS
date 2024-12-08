@@ -19,7 +19,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         return view
     }()
     private var toggler = true
-     
+    
     private lazy var topStack: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -398,8 +398,6 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
         guard let myID = try? keyService.retrieveUserID() else {
             return UISwipeActionsConfiguration()
         }
-        
-        
         guard currentQuestion.user.id == Int(myID) else {
             return UISwipeActionsConfiguration()
         }

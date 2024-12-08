@@ -12,6 +12,9 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     private let viewModel: ProfileViewModel
     private let keychainService: KeychainService
     private let loadingIndicator: LoadingIndicator
+    private var isDark = false
+    let isDarkMode = UserDefaults.standard.bool(forKey: "isDarkMode")
+    
     
     private lazy var spacerOne: UIView = {
         let view = UIView()
@@ -20,6 +23,12 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     }()
     
     private lazy var spacerTwo: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private lazy var spacerThree: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -40,6 +49,13 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     }()
     
     private lazy var lineThree: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .primaryGray
+        return view
+    }()
+    
+    private lazy var lineFourth: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .primaryGray
@@ -131,6 +147,38 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         stack.distribution = .fill
         stack.alignment = .center
         return stack
+    }()
+    
+    private lazy var themeStack: UIStackView = {
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .horizontal
+        stack.distribution = .fill
+        stack.alignment = .center
+        stack.spacing = 10
+        stack.isUserInteractionEnabled = true
+        return stack
+    }()
+    
+    private lazy var themeLabel: UILabel = {
+        let label = UILabel()
+        label.configureCustomText(
+            text: "Theme",
+            color: .primaryGray,
+            size: 17,
+            weight: .bold
+        )
+        
+        return label
+    }()
+    
+    private lazy var themeIcon: UIImageView = {
+        let image = UIImageView()
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.image = UIImage(systemName: "sun.max")
+        image.contentMode = .scaleAspectFit
+        image.tintColor = .primaryViolet
+        return image
     }()
     
     private lazy var thirdStack: UIStackView = {
@@ -243,6 +291,9 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     }
     
     private func setupUI() {
+        print(isDarkMode)
+        themeIcon.image = UIImage(systemName: isDarkMode ? "sun.max" : "moon")
+        
         view.backgroundColor = .primaryWhite
         view.addSubview(screenTitle)
         view.addSubview(avatarImage)
@@ -252,10 +303,12 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         view.addSubview(infoLabel)
         view.addSubview(firstStack)
         view.addSubview(secondStack)
+        view.addSubview(themeStack)
         view.addSubview(thirdStack)
         view.addSubview(lineOne)
         view.addSubview(lineTwo)
         view.addSubview(lineThree)
+        view.addSubview(lineFourth)
         
         firstStack.addArrangedSubview(scoreLabel)
         firstStack.addArrangedSubview(spacerOne)
@@ -264,6 +317,10 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         secondStack.addArrangedSubview(answeredQLabel)
         secondStack.addArrangedSubview(spacerTwo)
         secondStack.addArrangedSubview(asnwersCountLabel)
+        
+        themeStack.addArrangedSubview(themeLabel)
+        themeStack.addArrangedSubview(spacerThree)
+        themeStack.addArrangedSubview(themeIcon)
         
         thirdStack.addArrangedSubview(logOutIcon)
         thirdStack.addArrangedSubview(logOutLabel)
@@ -274,8 +331,8 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         let tapGestureL = UITapGestureRecognizer(target: self, action: #selector(logOut))
         thirdStack.addGestureRecognizer(tapGestureL)
         
-        let colorGesture = UITapGestureRecognizer(target: self, action: #selector(switchTheme))
-        secondStack.addGestureRecognizer(colorGesture)
+        let themeGesture = UITapGestureRecognizer(target: self, action: #selector(switchTheme))
+        themeStack.addGestureRecognizer(themeGesture)
         
         loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(loadingIndicator)
@@ -284,18 +341,6 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         loadingIndicator.startAnimating()
         
         setupConstraints()
-    }
-    
-    @objc private func switchTheme() {
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first {
-            let newStyle: UIUserInterfaceStyle = window.overrideUserInterfaceStyle == .dark ? .light : .dark
-            window.overrideUserInterfaceStyle = newStyle
-            
-            // Save the new style to UserDefaults
-            UserDefaults.standard.set(newStyle == .dark, forKey: "isDarkMode")
-        }
-        print("Theme switched and saved.")
     }
     
     private func setupConstraints() {
@@ -340,9 +385,19 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
             lineTwo.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             lineTwo.heightAnchor.constraint(equalToConstant: 1),
             
+            themeStack.heightAnchor.constraint(equalToConstant: 56),
+            themeStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            themeStack.topAnchor.constraint(equalTo: lineTwo.bottomAnchor, constant: 18),
+            themeStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            lineFourth.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            lineFourth.topAnchor.constraint(equalTo: themeStack.bottomAnchor, constant: 0),
+            lineFourth.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            lineFourth.heightAnchor.constraint(equalToConstant: 1),
+            
             thirdStack.heightAnchor.constraint(equalToConstant: 56),
             thirdStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            thirdStack.topAnchor.constraint(equalTo: lineTwo.bottomAnchor, constant: 18),
+            thirdStack.topAnchor.constraint(equalTo: lineFourth.bottomAnchor, constant: 18),
             thirdStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
             lineThree.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -378,6 +433,19 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         present(avatarVC, animated: true)
     }
     
+    
+    @objc private func switchTheme() {
+        themeIcon.image = UIImage(systemName: !isDarkMode ? "sun.max" : "moon")
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first {
+            let newStyle: UIUserInterfaceStyle = window.overrideUserInterfaceStyle == .dark ? .light : .dark
+            window.overrideUserInterfaceStyle = newStyle
+            
+            UserDefaults.standard.set(newStyle == .dark, forKey: "isDarkMode")
+        }
+    }
+    
     func didAvatarChanged() {
         avatarImage.image = UIImage(named: viewModel.avatarName)
     }
@@ -389,7 +457,7 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
         let score = profileInfo.rating
         let myAnswers = profileInfo.myAnswers
         let avatar = profileInfo.avatar
-
+        
         DispatchQueue.main.async {
             self.fullNameLabel.text = "\(firstName) \(lastName)"
             self.pointsLabel.text = "\(score)"
