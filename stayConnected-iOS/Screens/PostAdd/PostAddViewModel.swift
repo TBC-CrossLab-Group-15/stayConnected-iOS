@@ -50,13 +50,11 @@ final class PostAddViewModel {
         Task {
             
             var token = try keyService.retrieveAccessToken()
-            print("👷🏿‍♂️ \(token)")
             var headers = ["Authorization": "Bearer \(token)"]
             
             do {
                 let fetchedData: [Tag] = try await webService.fetchData(urlString: api, headers: [:])
                 inactiveTags = fetchedData
-                print("🔥")
                 DispatchQueue.main.async { [weak self] in
                     self?.delegate?.didTagsRefreshed()
                 }
@@ -64,7 +62,6 @@ final class PostAddViewModel {
                 if case NetworkError.statusCodeError(let statusCode) = error, statusCode == 401 {
                     try await tokenNetwork.getNewToken()
                     token = try keyService.retrieveAccessToken()
-                    print("🧝‍♂️ \(token)")
                     
                     headers = ["Authorization": "Bearer \(token)"]
                     

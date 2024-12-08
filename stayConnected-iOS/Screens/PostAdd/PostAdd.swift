@@ -39,7 +39,7 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
     
     private lazy var headerBar: UIView = {
         let view = UIView()
-        view.backgroundColor = .secondaryWhite
+        view.backgroundColor = .bgWhite
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()

@@ -232,7 +232,7 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
     }
     
     private func resetPassword() {
-        print("reset pwd")
+        
     }
     
     private func signUP() {

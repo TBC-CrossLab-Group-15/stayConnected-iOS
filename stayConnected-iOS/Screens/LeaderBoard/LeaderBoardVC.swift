@@ -189,7 +189,6 @@ final class LeaderBoardVC: UIViewController, LeaderBoardDelegate {
 
 extension LeaderBoardVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(viewModel.leaderBoardArray.count)
         return viewModel.leaderBoardArray.count
     }
     

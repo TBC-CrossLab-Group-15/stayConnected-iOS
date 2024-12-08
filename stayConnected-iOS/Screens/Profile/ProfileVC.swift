@@ -13,7 +13,7 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     private let keychainService: KeychainService
     private let loadingIndicator: LoadingIndicator
     private var isDark = false
-    let isDarkMode = UserDefaults.standard.bool(forKey: "isDarkMode")
+    var isDarkMode = UserDefaults.standard.bool(forKey: "isDarkMode")
     
     
     private lazy var spacerOne: UIView = {
@@ -291,7 +291,6 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     }
     
     private func setupUI() {
-        print(isDarkMode)
         themeIcon.image = UIImage(systemName: isDarkMode ? "sun.max" : "moon")
         
         view.backgroundColor = .primaryWhite
@@ -436,6 +435,7 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     
     @objc private func switchTheme() {
         themeIcon.image = UIImage(systemName: !isDarkMode ? "sun.max" : "moon")
+        isDarkMode.toggle()
         
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = windowScene.windows.first {

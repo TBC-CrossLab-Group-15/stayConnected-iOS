@@ -16,6 +16,16 @@
                     <view key="view" contentMode="scaleToFill" id="0IY-Qr-MwW">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" fixedFrame="YES" image="5336958 1" translatesAutoresizingMaskIntoConstraints="NO" id="EGb-fe-dFD">
+                                <rect key="frame" x="137" y="345" width="118" height="90"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" fixedFrame="YES" image="StayConnected" translatesAutoresizingMaskIntoConstraints="NO" id="V99-dU-lds">
+                                <rect key="frame" x="102" y="443" width="188" height="23"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="gXT-lM-VA7"/>
                         <color key="backgroundColor" name="primaryViolet"/>
                     </view>
@@ -26,6 +36,8 @@
         </scene>
     </scenes>
     <resources>
+        <image name="5336958 1" width="118" height="90"/>
+        <image name="StayConnected" width="188" height="23"/>
         <namedColor name="primaryViolet">
             <color red="0.3059999942779541" green="0.32499998807907104" blue="0.63499999046325684" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

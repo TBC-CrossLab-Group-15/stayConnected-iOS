@@ -30,7 +30,6 @@ final class TokenNetwork {
         
         let url = "https://stayconnected.lol/api/user/token/refresh/"
         let body = RefreshTokenModel(refresh: refreshToken)
-        print("🔴🟢🔴🔴")
         do {
             let response: AccessTokenModel = try await webService.postData(
                 urlString: url,

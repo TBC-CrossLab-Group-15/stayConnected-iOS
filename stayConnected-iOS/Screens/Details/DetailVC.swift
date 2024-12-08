@@ -121,7 +121,6 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(questionModel.createDate)
         setupUI()
     }
     
@@ -269,7 +268,7 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
     func didAnswersFetched() {
         commentsTable.reloadData()
         loadingIndicator.stopAnimating()
-        print("🔴")
+        
         if viewModel.answersArray.count == 0 {
             commentsTable.isHidden = true
             noCommentsImage.isHidden = false
@@ -306,7 +305,7 @@ extension DetailVC: UITableViewDelegate, UITableViewDataSource {
         
         if currentAnswer.user.id == Int(myID) {
             let deleteAnswer = UIContextualAction(style: .normal, title: "Delete") {[weak self] action, view, completionHandler in
-                print(currentAnswer)
+                
                 self?.deletionHandler(with: currentAnswer.id, and: currentQuestionID)
                 completionHandler(true)
             }
@@ -332,7 +331,7 @@ extension DetailVC: UITableViewDelegate, UITableViewDataSource {
             return UISwipeActionsConfiguration(actions: [rejectedAnswer])
         } else {
             let acceptedAnswer = UIContextualAction(style: .normal, title: "Accept") {[weak self] action, view, completionHandler in
-                print(currentAnswer)
+                
                 self?.actionHandler(at: indexPath.row)
                 completionHandler(true)
             }

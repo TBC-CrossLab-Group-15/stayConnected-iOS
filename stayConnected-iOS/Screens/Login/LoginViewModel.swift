@@ -38,8 +38,6 @@ final class LoginViewModel {
         
                 try keyService.storeTokens(access: response.access, refresh: response.refresh)
                 try keyService.storeUserID(userID: String(response.userID))
-                print("‼️ \(response.access)")
-                print("✨ \(response.refresh)")
                 DispatchQueue.main.async {[weak self] in
                     self?.delegate?.navigateToFeed()
                 }
@@ -47,7 +45,6 @@ final class LoginViewModel {
                 DispatchQueue.main.async {[weak self] in
                     self?.errorDelebate?.didLoginFailed()
                 }
-                print("Error: \(error)")
             }
         }
     }

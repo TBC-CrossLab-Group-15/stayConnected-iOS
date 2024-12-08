@@ -113,12 +113,10 @@ final class ProfileViewModel {
         let url = "https://stayconnected.lol/api/user/profile/\(userID)/"
         let body = AvatarReqBodyModel(avatarId: name )
         
-        let response: AvatarReqBodyModel = try await putService.putData(urlString: url, headers: headers, body: body)
-        print(response)
+        let _: AvatarReqBodyModel = try await putService.putData(urlString: url, headers: headers, body: body)
     }
     
     func postedAvatar(name: String){
-        print(name)
         Task {
             do {
                 var token = try keyService.retrieveAccessToken()
@@ -168,7 +166,6 @@ final class ProfileViewModel {
                 
                 let _: LogoutModel = try await postService.postData(urlString: api, headers: nil, body: body)
                 try keyService.removeTokens()
-                print("✅")
             } catch {
                 handleNetworkError(error)
             }

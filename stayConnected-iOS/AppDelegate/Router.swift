@@ -12,7 +12,7 @@ final class Router: UIViewController {
         self.tokenNetwork = tokenNetwork
         super.init(nibName: nil, bundle: nil)
         
-        view.backgroundColor = .primaryViolet
+        view.backgroundColor = .starterCol
     }
     
     required init?(coder: NSCoder) {
@@ -36,7 +36,6 @@ final class Router: UIViewController {
                 }
             } catch {
                 DispatchQueue.main.async {[weak self] in
-                    print("Error checking token: \(error)")
                     self?.navigationController?.pushViewController(LoginVC(), animated: false)
                 }
             }
