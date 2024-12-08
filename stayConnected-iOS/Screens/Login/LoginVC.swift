@@ -25,7 +25,7 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
         let label = UILabel()
         label.configureCustomText(
             text: "Log in",
-            color: .black,
+            color: .primaryBack,
             size: 30,
             weight: .bold
         )
@@ -121,7 +121,7 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
         let button = UIButton()
         button.configureCustomButton(
             title: "Log In",
-            color: .white,
+            color: .primaryWhite,
             fontName: "InterS",
             fontSize: 16,
             cornerR: 12,
@@ -152,7 +152,7 @@ class LoginVC: UIViewController, LoginNavigationDelegate, LoginErrorDelegate {
     }
     
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .primaryWhite
         viewModel.delegate = self
         viewModel.errorDelebate = self
 

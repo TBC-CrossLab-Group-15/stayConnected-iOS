@@ -31,7 +31,8 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
     private lazy var backButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(named: "backIcon"), for: .normal)
+        button.setImage(UIImage(named: "backIcon")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = .backArrowCol
         button.addAction(UIAction(handler: {[weak self] _ in
             self?.navigationController?.popViewController(animated: true)
         }), for: .touchUpInside)
@@ -93,6 +94,7 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
         table.dataSource = self
         table.separatorStyle = .none
         table.register(CommentCell.self, forCellReuseIdentifier: "CommentCell")
+        table.backgroundColor = .clear
         return table
     }()
     
@@ -126,7 +128,7 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
     private func setupUI() {
         viewModel.delegate = self
         viewModel.refetchCurrentPostAnswers(with: questionModel.id)
-        view.backgroundColor = .white
+        view.backgroundColor = .primaryWhite
         inputAnswer.translatesAutoresizingMaskIntoConstraints = false
         loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
         
@@ -227,7 +229,7 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
         
         postTitle.configureCustomText(
             text: questionModel.text,
-            color: .black,
+            color: .primaryBack,
             size: 20,
             weight: .regular,
             lineNumber: 10

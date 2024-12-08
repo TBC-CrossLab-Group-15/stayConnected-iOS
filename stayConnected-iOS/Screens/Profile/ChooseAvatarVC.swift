@@ -20,6 +20,9 @@ class ChooseAvatarVC: UIViewController {
         tableView.showsVerticalScrollIndicator = false
         tableView.separatorStyle = .none
         tableView.backgroundColor = .bgWhite
+        tableView.clipsToBounds = true
+        tableView.layer.cornerRadius = 12
+        tableView.separatorStyle = .singleLine
         return tableView
     }()
     
@@ -41,7 +44,7 @@ class ChooseAvatarVC: UIViewController {
     }
     
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .primaryWhite
         setupConstraints()
     }
     

@@ -44,7 +44,7 @@ final class QuestionCell: UITableViewCell {
     private lazy var cellView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
+        view.backgroundColor = .primaryWhite
         view.clipsToBounds = true
         view.layer.cornerRadius = 12
         return view
@@ -88,7 +88,7 @@ final class QuestionCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             cellStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            cellStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -33),
+            cellStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             cellStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             cellStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
             
@@ -132,7 +132,7 @@ final class QuestionCell: UITableViewCell {
         
         questionLabel.configureCustomText(
             text: question.title,
-            color: .black,
+            color: .primaryBack,
             size: 18,
             weight: .regular,
             lineNumber: 1

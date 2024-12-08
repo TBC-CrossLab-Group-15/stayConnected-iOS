@@ -48,7 +48,7 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
         let label = UILabel()
         label.configureCustomText(
             text: "Add Question",
-            color: .black,
+            color: .primaryBack,
             size: 16,
             weight: .regular
         )
@@ -196,7 +196,7 @@ class PostAdd: UIViewController, UITextFieldDelegate, DidTagsRefreshed, DidPoste
     }
     
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .primaryWhite
         postInput.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(lineOne)
         view.addSubview(lineTwo)

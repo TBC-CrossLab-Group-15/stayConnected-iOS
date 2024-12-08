@@ -19,7 +19,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         return view
     }()
     private var toggler = true
-     
+    
     private lazy var topStack: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -34,7 +34,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         let label = UILabel()
         label.configureCustomText(
             text: "Questions",
-            color: .black,
+            color: .primaryBack,
             size: 20,
             weight: .bold
         )
@@ -45,7 +45,8 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
     private lazy var addButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(named: "addIcon"), for: .normal)
+        button.setImage(UIImage(named: "addIcon")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = .primaryViolet
         button.addAction(UIAction(handler: {[weak self] _ in
             self?.addPost()
         }), for: .touchUpInside)
@@ -66,7 +67,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("General", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.primaryWhite, for: .normal)
         button.clipsToBounds = true
         button.layer.cornerRadius = 12
         button.addAction(UIAction(handler: {[weak self] _ in
@@ -83,7 +84,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Personal", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.primaryWhite, for: .normal)
         button.clipsToBounds = true
         button.layer.cornerRadius = 12
         button.addAction(UIAction(handler: {[weak self] _ in
@@ -106,10 +107,10 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         field.keyboardType = .default
         
         let leftIconContainer = UIView(frame: CGRect(x: 0, y: 0, width: 36, height: 28))
-        let lockIcon = UIImageView(image: UIImage(named: "search"))
-        lockIcon.tintColor = .primaryGray
-        lockIcon.frame = CGRect(x: 8, y: leftIconContainer.frame.height / 2 - 14, width: 28, height: 28)
-        leftIconContainer.addSubview(lockIcon)
+        let searchIcon = UIImageView(image: UIImage(named: "search")?.withRenderingMode(.alwaysTemplate))
+        searchIcon.tintColor = .primaryGray
+        searchIcon.frame = CGRect(x: 8, y: leftIconContainer.frame.height / 2 - 14, width: 28, height: 28)
+        leftIconContainer.addSubview(searchIcon)
         
         field.leftView = leftIconContainer
         field.leftViewMode = .always
@@ -165,7 +166,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         let label = UILabel()
         label.configureCustomText(
             text: "Be the first to ask one",
-            color: .black,
+            color: .primaryBack,
             size: 15,
             weight: .bold
         )
@@ -184,7 +185,6 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(QuestionCell.self, forCellReuseIdentifier: "QuestionCell")
-        tableView.backgroundColor = .clear
         tableView.delegate = self
         tableView.dataSource = self
         tableView.showsVerticalScrollIndicator = false
@@ -232,7 +232,7 @@ final class FeedVC: UIViewController, FeedModelDelegate, TagsModelDelegate, Sear
     }
     
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .primaryWhite
         
         view.addSubview(topStack)
         topStack.addArrangedSubview(screenTitle)
@@ -398,13 +398,11 @@ extension FeedVC: UITableViewDelegate, UITableViewDataSource {
         guard let myID = try? keyService.retrieveUserID() else {
             return UISwipeActionsConfiguration()
         }
-        
-        
         guard currentQuestion.user.id == Int(myID) else {
             return UISwipeActionsConfiguration()
         }
         
-        let rejectedAnswer = UIContextualAction(style: .destructive, title: "Reject") {[weak self] action, view, completionHandler in
+        let rejectedAnswer = UIContextualAction(style: .destructive, title: "Delete") {[weak self] action, view, completionHandler in
             self?.actionHandler(at: currentQuestion.id)
             completionHandler(true)
         }

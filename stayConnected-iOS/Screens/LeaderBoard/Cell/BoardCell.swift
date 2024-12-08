@@ -76,6 +76,7 @@ class BoardCell: UITableViewCell {
     }
     
     private func setupUI() {
+        contentView.backgroundColor = .bgWhite
         contentView.addSubview(mainStack)
         mainStack.addArrangedSubview(userAvatar)
         mainStack.addArrangedSubview(leftStack)

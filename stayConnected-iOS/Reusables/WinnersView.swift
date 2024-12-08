@@ -47,7 +47,7 @@ final class WinnersView: UIView {
         let label = UILabel()
         label.configureCustomText(
             text: firstName,
-            color: .white,
+            color: .primaryWhite,
             size: 12,
             weight: .semibold
         )
@@ -58,7 +58,7 @@ final class WinnersView: UIView {
         let label = UILabel()
         label.configureCustomText(
             text: "\(score)",
-            color: .white,
+            color: .primaryWhite,
             size: 15,
             weight: .bold
         )
@@ -69,7 +69,7 @@ final class WinnersView: UIView {
         let label = UILabel()
         label.configureCustomText(
             text: "@\(userName)",
-            color: .white,
+            color: .primaryWhite,
             size: 10,
             weight: .bold
         )
