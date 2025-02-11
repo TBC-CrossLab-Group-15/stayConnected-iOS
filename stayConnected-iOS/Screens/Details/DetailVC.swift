@@ -157,7 +157,7 @@ class DetailVC: UIViewController, ReloadAnswersDelegate {
                 return showAlert(title: "Hold On a Sec…", message: "Enter your comment", buttonTitle: "Try Again")
             }
             
-            let api = "https://stayconnected.lol/api/posts/answers/"
+            let api = EndpointsEnum.answers.rawValue
             viewModel.collectAnswerInfo(api: api, answer: inputValue, postID: self.questionModel.id)
             viewModel.refetchCurrentPostAnswers(with: questionModel.id)
             inputAnswer.clearInput()

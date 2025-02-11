@@ -28,24 +28,28 @@ final class LoginViewModel {
     }
     
     func loginAction(email: String, password: String) {
-        let url = "https://stayconnected.lol/api/user/login/"
+      let url = EndpointsEnum.login.rawValue
         
         let body = LoginRequest(email: email, password: password)
         
-        Task {
-            do {
-                let response: LoginResponse = try await postService.postData(urlString: url, headers: nil, body: body)
-        
-                try keyService.storeTokens(access: response.access, refresh: response.refresh)
-                try keyService.storeUserID(userID: String(response.userID))
-                DispatchQueue.main.async {[weak self] in
-                    self?.delegate?.navigateToFeed()
-                }
-            } catch {
-                DispatchQueue.main.async {[weak self] in
-                    self?.errorDelebate?.didLoginFailed()
-                }
-            }
-        }
+      Task { [weak self] in
+          guard let self = self else { return }
+        print(body)
+
+          do {
+              let response: LoginResponse = try await self.postService.postData(urlString: url, headers: nil, body: body)
+
+              try self.keyService.storeTokens(access: response.access, refresh: response.refresh)
+              try self.keyService.storeUserID(userID: String(response.userID))
+
+            await MainActor.run {
+                  self.delegate?.navigateToFeed()
+              }
+          } catch {
+            await MainActor.run {
+                  self.errorDelebate?.didLoginFailed()
+              }
+          }
+      }
     }
 }

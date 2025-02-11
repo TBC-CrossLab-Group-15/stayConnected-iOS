@@ -40,13 +40,13 @@ final class DetailViewModel {
     
     func refetchCurrentPostAnswers(with postID: Int) {
         Task {
-            let apiLink = "https://stayconnected.lol/api/posts/questions/\(postID)/"
+            let apiLink = "\(EndpointsEnum.singelQuestion.rawValue)\(postID)"
             do {
                 let response: QuestionModel = try await webService.fetchData(urlString: apiLink, headers: nil)
                 answersArray = response.answers
                 
-                DispatchQueue.main.async {[weak self] in
-                    self?.delegate?.didAnswersFetched()
+              await MainActor.run {
+                    delegate?.didAnswersFetched()
                 }
             } catch {
                 handleNetworkError(error)
@@ -90,7 +90,7 @@ final class DetailViewModel {
     func checkAnswer(at index: Int, postID: Int) {
         let currentAnswer = answersArray[index]
         
-        let api = "https://stayconnected.lol/api/posts/answers/\(currentAnswer.id)/"
+        let api = "\(EndpointsEnum.answers.rawValue)\(currentAnswer.id)/"
         
         let body = AnswerStatusModel(isCorrect: !currentAnswer.isCorrect)
         
@@ -123,7 +123,7 @@ final class DetailViewModel {
     }
     
     func deleteComment(with answerID: Int, and postID: Int) {
-        let api = "https://stayconnected.lol/api/posts/answers/\(answerID)/"
+        let api = "\(EndpointsEnum.answers.rawValue)/\(answerID)/"
         Task{
             do {
                 var token = try keyService.retrieveAccessToken()

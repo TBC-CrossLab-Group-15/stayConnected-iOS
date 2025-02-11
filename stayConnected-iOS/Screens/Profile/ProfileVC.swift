@@ -277,8 +277,8 @@ class ProfileVC: UIViewController, AvatarDelegate, UserInfoDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.fetchData(api: "https://stayconnected.lol/api/user/currentuser/")
-        viewModel.fetchedAvatars(api: "https://stayconnected.lol/api/user/avatars/")
+        viewModel.fetchData(api: EndpointsEnum.currentUser.rawValue)
+        viewModel.fetchedAvatars(api: EndpointsEnum.avatars.rawValue)
     }
     
     override func viewDidLoad() {
